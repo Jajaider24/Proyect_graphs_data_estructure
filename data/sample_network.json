@@ -1,0 +1,58 @@
+{
+  "airports": [
+    {
+      "id": "BOG",
+      "nombre": "Aeropuerto Internacional El Dorado",
+      "ciudad": "Bogotá",
+      "pais": "Colombia",
+      "zonaHoraria": "UTC-5",
+      "esHub": true,
+      "costoAlojamiento": 80,
+      "costoAlimentacion": 15,
+      "actividades": [
+        {
+          "nombre": "Tour Museo del Oro",
+          "tipo": "opcional",
+          "duracionMin": 120,
+          "costoUSD": 25
+        }
+      ],
+      "trabajos": [
+        {
+          "nombre": "Cargador de equipaje",
+          "tarifaHora": 12,
+          "maxHoras": 8
+        }
+      ]
+    }
+  ],
+  "rutas": [
+    {
+      "origen": "BOG",
+      "destino": "MDE",
+      "distanciaKm": 250,
+      "aeronaves": ["Comercial", "Regional"],
+      "costoBase": 0.18,
+      "estanciaMinima": 30
+    }
+  ],
+  "configuracion": {
+    "aeronaves": {
+      "Comercial": {
+        "costoKm": 0.18,
+        "tiempoKm": 0.7
+      },
+      "Regional": {
+        "costoKm": 0.25,
+        "tiempoKm": 1.1
+      },
+      "Helice": {
+        "costoKm": 0.12,
+        "tiempoKm": 2.5
+    }
+    },
+    "presupuestoMinimoPorc": 35,
+    "intervaloAlojamiento": 20,
+    "intervaloAlimentacion": 8
+  }
+}
