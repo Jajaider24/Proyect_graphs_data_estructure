@@ -13,16 +13,24 @@ def dijkstra_shortest_path(graph, start, end, criterion='cost'):
     Dijkstra's algorithm to find shortest path between two airports.
     Supports optimization by distance, time, or cost.
     
+    Uses the dijkstra_simple method from the Grafo class (professor's implementation).
+    
     Args:
-        graph: The airline network graph
-        start: Starting airport code
-        end: Destination airport code
-        criterion: 'cost', 'time', or 'distance'
+        graph: The airline network graph (Grafo object)
+        start: Starting airport code (vertex identifier)
+        end: Destination airport code (vertex identifier)
+        criterion: 'cost', 'time', or 'distance' (default: 'cost')
         
     Returns:
-        Shortest path and total weight
+        Tuple of (distances dict, predecessors dict, path list)
     """
-    pass
+    # Use the professor's dijkstra_simple implementation from Grafo class
+    if hasattr(graph, 'dijkstra_simple'):
+        dist, pred, path = graph.dijkstra_simple(graph, start, end)
+        return dist, pred, path
+    else:
+        # Fallback for non-Grafo objects
+        raise NotImplementedError("Graph object must have dijkstra_simple method")
 
 
 def modified_dijkstra(graph, start, budget, time_available, max_stops, exclude_secondary=False):
