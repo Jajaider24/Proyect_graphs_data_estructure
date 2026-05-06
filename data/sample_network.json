@@ -7,11 +7,11 @@
       "pais": "Colombia",
       "zonaHoraria": "UTC-5",
       "esHub": true,
-      "costoAlojamiento": 80,
-      "costoAlimentacion": 15,
+      "costoAlojamiento": 85,
+      "costoAlimentacion": 18,
       "actividades": [
         {
-          "nombre": "Tour Museo del Oro",
+          "nombre": "Museo del Oro",
           "tipo": "opcional",
           "duracionMin": 120,
           "costoUSD": 25
@@ -19,40 +19,322 @@
       ],
       "trabajos": [
         {
-          "nombre": "Cargador de equipaje",
-          "tarifaHora": 12,
+          "nombre": "Ramp Assistant",
+          "tarifaHora": 14,
           "maxHoras": 8
         }
       ]
+    },
+
+    {
+      "id": "MDE",
+      "nombre": "Aeropuerto José María Córdova",
+      "ciudad": "Medellín",
+      "pais": "Colombia",
+      "zonaHoraria": "UTC-5",
+      "esHub": false,
+      "costoAlojamiento": 60,
+      "costoAlimentacion": 14,
+      "actividades": [
+        {
+          "nombre": "Comuna 13 Tour",
+          "tipo": "opcional",
+          "duracionMin": 180,
+          "costoUSD": 30
+        }
+      ],
+      "trabajos": [
+        {
+          "nombre": "Baggage Loader",
+          "tarifaHora": 10,
+          "maxHoras": 6
+        }
+      ]
+    },
+
+    {
+      "id": "CTG",
+      "nombre": "Aeropuerto Rafael Núñez",
+      "ciudad": "Cartagena",
+      "pais": "Colombia",
+      "zonaHoraria": "UTC-5",
+      "esHub": false,
+      "costoAlojamiento": 95,
+      "costoAlimentacion": 20,
+      "actividades": [],
+      "trabajos": []
+    },
+
+    {
+      "id": "CLO",
+      "nombre": "Aeropuerto Alfonso Bonilla Aragón",
+      "ciudad": "Cali",
+      "pais": "Colombia",
+      "zonaHoraria": "UTC-5",
+      "esHub": false,
+      "costoAlojamiento": 55,
+      "costoAlimentacion": 12,
+      "actividades": [],
+      "trabajos": []
+    },
+
+    {
+      "id": "LIM",
+      "nombre": "Aeropuerto Jorge Chávez",
+      "ciudad": "Lima",
+      "pais": "Perú",
+      "zonaHoraria": "UTC-5",
+      "esHub": true,
+      "costoAlojamiento": 75,
+      "costoAlimentacion": 16,
+      "actividades": [],
+      "trabajos": []
+    },
+
+    {
+      "id": "SCL",
+      "nombre": "Aeropuerto Arturo Merino Benítez",
+      "ciudad": "Santiago",
+      "pais": "Chile",
+      "zonaHoraria": "UTC-4",
+      "esHub": true,
+      "costoAlojamiento": 90,
+      "costoAlimentacion": 22,
+      "actividades": [],
+      "trabajos": []
+    },
+
+    {
+      "id": "EZE",
+      "nombre": "Aeropuerto Ezeiza",
+      "ciudad": "Buenos Aires",
+      "pais": "Argentina",
+      "zonaHoraria": "UTC-3",
+      "esHub": true,
+      "costoAlojamiento": 100,
+      "costoAlimentacion": 24,
+      "actividades": [],
+      "trabajos": []
+    },
+
+    {
+      "id": "GRU",
+      "nombre": "Aeropuerto Guarulhos",
+      "ciudad": "São Paulo",
+      "pais": "Brasil",
+      "zonaHoraria": "UTC-3",
+      "esHub": true,
+      "costoAlojamiento": 110,
+      "costoAlimentacion": 25,
+      "actividades": [],
+      "trabajos": []
+    },
+
+    {
+      "id": "MEX",
+      "nombre": "Aeropuerto Internacional de Ciudad de México",
+      "ciudad": "Ciudad de México",
+      "pais": "México",
+      "zonaHoraria": "UTC-6",
+      "esHub": true,
+      "costoAlojamiento": 95,
+      "costoAlimentacion": 19,
+      "actividades": [],
+      "trabajos": []
+    },
+
+    {
+      "id": "PTY",
+      "nombre": "Aeropuerto Tocumen",
+      "ciudad": "Panamá",
+      "pais": "Panamá",
+      "zonaHoraria": "UTC-5",
+      "esHub": true,
+      "costoAlojamiento": 80,
+      "costoAlimentacion": 18,
+      "actividades": [],
+      "trabajos": []
+    },
+
+    {
+      "id": "UIO",
+      "nombre": "Aeropuerto Mariscal Sucre",
+      "ciudad": "Quito",
+      "pais": "Ecuador",
+      "zonaHoraria": "UTC-5",
+      "esHub": false,
+      "costoAlojamiento": 65,
+      "costoAlimentacion": 14,
+      "actividades": [],
+      "trabajos": []
+    },
+
+    {
+      "id": "CCS",
+      "nombre": "Aeropuerto Simón Bolívar",
+      "ciudad": "Caracas",
+      "pais": "Venezuela",
+      "zonaHoraria": "UTC-4",
+      "esHub": false,
+      "costoAlojamiento": 70,
+      "costoAlimentacion": 15,
+      "actividades": [],
+      "trabajos": []
     }
   ],
+
   "rutas": [
+
     {
       "origen": "BOG",
       "destino": "MDE",
       "distanciaKm": 250,
-      "aeronaves": ["Comercial", "Regional"],
+      "aeronaves": ["Commercial", "Regional"],
       "costoBase": 0.18,
-      "estanciaMinima": 30
+      "estanciaMinima": 60
+    },
+
+    {
+      "origen": "MDE",
+      "destino": "CTG",
+      "distanciaKm": 460,
+      "aeronaves": ["Commercial", "Helice"],
+      "costoBase": 0.18,
+      "estanciaMinima": 60
+    },
+
+    {
+      "origen": "BOG",
+      "destino": "LIM",
+      "distanciaKm": 1880,
+      "aeronaves": ["Commercial"],
+      "costoBase": 0.25,
+      "estanciaMinima": 120
+    },
+
+    {
+      "origen": "LIM",
+      "destino": "SCL",
+      "distanciaKm": 2450,
+      "aeronaves": ["Commercial"],
+      "costoBase": 0.25,
+      "estanciaMinima": 180
+    },
+
+    {
+      "origen": "SCL",
+      "destino": "EZE",
+      "distanciaKm": 1130,
+      "aeronaves": ["Commercial", "Regional"],
+      "costoBase": 0.18,
+      "estanciaMinima": 120
+    },
+
+    {
+      "origen": "EZE",
+      "destino": "GRU",
+      "distanciaKm": 1670,
+      "aeronaves": ["Commercial"],
+      "costoBase": 0.20,
+      "estanciaMinima": 120
+    },
+
+    {
+      "origen": "GRU",
+      "destino": "PTY",
+      "distanciaKm": 5070,
+      "aeronaves": ["Commercial"],
+      "costoBase": 0.25,
+      "estanciaMinima": 240
+    },
+
+    {
+      "origen": "PTY",
+      "destino": "MEX",
+      "distanciaKm": 2400,
+      "aeronaves": ["Commercial", "Regional"],
+      "costoBase": 0.20,
+      "estanciaMinima": 180
+    },
+
+    {
+      "origen": "MEX",
+      "destino": "BOG",
+      "distanciaKm": 3160,
+      "aeronaves": ["Commercial"],
+      "costoBase": 0.25,
+      "estanciaMinima": 180
+    },
+
+    {
+      "origen": "BOG",
+      "destino": "UIO",
+      "distanciaKm": 730,
+      "aeronaves": ["Regional", "Helice"],
+      "costoBase": 0,
+      "estanciaMinima": 60
+    },
+
+    {
+      "origen": "UIO",
+      "destino": "CCS",
+      "distanciaKm": 1900,
+      "aeronaves": ["Commercial"],
+      "costoBase": 0.20,
+      "estanciaMinima": 120
+    },
+
+    {
+      "origen": "CCS",
+      "destino": "PTY",
+      "distanciaKm": 850,
+      "aeronaves": ["Regional"],
+      "costoBase": 0.15,
+      "estanciaMinima": 90
+    },
+
+    {
+      "origen": "CLO",
+      "destino": "BOG",
+      "distanciaKm": 300,
+      "aeronaves": ["Regional"],
+      "costoBase": 0.15,
+      "estanciaMinima": 60
+    },
+
+    {
+      "origen": "MDE",
+      "destino": "CLO",
+      "distanciaKm": 330,
+      "aeronaves": ["Helice"],
+      "costoBase": 0,
+      "estanciaMinima": 45
     }
+
   ],
+
   "configuracion": {
     "aeronaves": {
-      "Comercial": {
+      "Commercial": {
         "costoKm": 0.18,
         "tiempoKm": 0.7
       },
+
       "Regional": {
         "costoKm": 0.25,
         "tiempoKm": 1.1
       },
+
       "Helice": {
         "costoKm": 0.12,
         "tiempoKm": 2.5
-    }
+      }
     },
+
     "presupuestoMinimoPorc": 35,
+
     "intervaloAlojamiento": 20,
+
     "intervaloAlimentacion": 8
   }
 }

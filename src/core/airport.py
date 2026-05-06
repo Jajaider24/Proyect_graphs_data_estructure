@@ -1,46 +1,71 @@
 """
-Airport module - Airport data model representation.
+Airport module - Airport domain model.
 
-Classes:
-    - Airport: Represents a single airport node with all its properties
+Represents airports as graph nodes in the airline network.
 """
 
+from src.core.base_graph import Vertice
 
-class Airport:
+
+class Airport(Vertice):
     """
-    Represents an airport node with complete information about location,
-    costs, activities, and available jobs.
-    
-    Extends Vertice concept from professor's class with domain-specific information.
+    Represents an airport node in the graph.
+
+    This class extends the academic Vertice structure
+    provided in class and adds domain-specific data
+    required by the airline simulation project.
+
+    Each airport stores:
+        - Metadata
+        - Costs
+        - Activities
+        - Jobs
+        - Route adjacency list
     """
-    def __init__(self, iata_code, nombre="", ciudad="", pais="", zona_horaria=""):
+
+    def __init__(self, iata_code):
         """
-        Initialize an airport.
-        
+        Initialize airport.
+
         Args:
-            iata_code: IATA airport code (identifier)
-            nombre: Full airport name
-            ciudad: City name
-            pais: Country name
-            zona_horaria: Timezone
+            iata_code (str):
+                Airport IATA code.
         """
-        self.id = iata_code  # Identifier for graph
-        self.iata_code = iata_code
-        self.nombre = nombre
-        self.ciudad = ciudad
-        self.pais = pais
-        self.zona_horaria = zona_horaria
+
+        # Initialize academic graph vertex structure
+        super().__init__(iata_code)
+
+        # Unique airport identifier
+        self.id = iata_code
+
+        # Project adjacency list.
+        # Stores Route objects.
+        self.routes = []
+
+        # Airport metadata
+        self.nombre = ""
+        self.ciudad = ""
+        self.pais = ""
+        self.zona_horaria = ""
+
+        # Airport classification
         self.es_hub = False
+
+        # Mandatory traveler costs
         self.costo_alojamiento = 0
         self.costo_alimentacion = 0
+
+        # Dynamic simulation data
         self.actividades = []
         self.trabajos = []
-    
-    def __str__(self):
-        """String representation of airport."""
-        return f"{self.iata_code}: {self.nombre}"
-    
-    def __repr__(self):
-        """Developer representation of airport."""
-        return f"Airport(id={self.iata_code}, nombre={self.nombre})"
 
+    def __str__(self):
+        """
+        String representation of airport.
+        """
+
+        return (
+            f"{self.id} - "
+            f"{self.ciudad}, "
+            f"{self.pais}"
+        )

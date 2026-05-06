@@ -1,51 +1,266 @@
 """
-Route module - Route and aircraft data models.
+Route module - Route and aircraft domain models.
 
-Classes:
-    - Route: Represents a flight route between two airports
-    - Aircraft: Represents an aircraft type with cost and time parameters
+This module contains the structures used to represent:
+    - Directed airline routes
+    - Aircraft options
+    - Dynamic route behavior
+
+The classes extend the academic graph structures
+provided during class lectures.
 """
 
+from src.core.base_graph import Arista
 
-class Aircraft:
+
+class AircraftOption:
     """
-    Represents an aircraft type with its operational parameters.
-    Includes cost per km and time per km values.
+    Represents an aircraft option available for a route.
+
+    Each route can support multiple aircraft types
+    with different operational costs and durations.
+
+    Example:
+        - Commercial aircraft
+        - Regional aircraft
+        - Helicopter aircraft
     """
-    def __init__(self, name, cost_per_km=0, time_per_km=0):
+
+    def __init__(
+        self,
+        name,
+        cost_per_km,
+        time_per_km
+    ):
         """
-        Initialize an aircraft type.
-        
+        Initialize aircraft option.
+
         Args:
-            name: Name of aircraft type (Commercial, Regional, Helicopter)
-            cost_per_km: Cost in USD per kilometer
-            time_per_km: Time in minutes per kilometer
+            name (str):
+                Aircraft type name.
+
+            cost_per_km (float):
+                Operational cost per kilometer.
+
+            time_per_km (float):
+                Flight duration in minutes per kilometer.
         """
+
         self.name = name
+
         self.cost_per_km = cost_per_km
+
         self.time_per_km = time_per_km
 
+    def __str__(self):
+        """
+        String representation of aircraft option.
+        """
 
-class Route:
+        return (
+            f"{self.name} | "
+            f"Cost/km={self.cost_per_km} | "
+            f"Time/km={self.time_per_km}"
+        )
+
+
+class Route(Arista):
     """
-    Represents a directed flight route between two airports.
-    Stores distance, available aircraft, and cost information.
+    Represents a directed route between two airports.
+
+    This class extends the academic Arista structure
+    while adding domain-specific airline functionality.
+
+    The route stores:
+        - Distance
+        - Aircraft options
+        - Dynamic restrictions
+        - Route state
     """
-    def __init__(self, origin, destination, distance_km, aircraft_types=None, cost_base=None, min_stay=0):
+
+    def __init__(
+        self,
+        origin,
+        destination,
+        distance_km
+    ):
         """
-        Initialize a route.
-        
+        Initialize route.
+
         Args:
-            origin: Origin airport code
-            destination: Destination airport code
-            distance_km: Distance in kilometers
-            aircraft_types: List of available aircraft types
-            cost_base: Base cost (0 if subsidized)
-            min_stay: Minimum stay time in minutes
+            origin:
+                Origin airport object.
+
+            destination:
+                Destination airport object.
+
+            distance_km (float):
+                Distance between airports in kilometers.
         """
+
+        # Initialize academic edge structure
+        super().__init__(
+            destination,
+            distance_km
+        )
+
+        # Airport references
         self.origin = origin
         self.destination = destination
+
+        # Distance metric
         self.distance_km = distance_km
-        self.aircraft_types = aircraft_types if aircraft_types else []
-        self.cost_base = cost_base
-        self.min_stay = min_stay
+
+        # Academic weight compatibility
+        self.peso = distance_km
+
+        # Current optimization criterion
+        self.criterion = "distance"
+
+        # Aircraft available for this route
+        self.aircraft_options = []
+
+        # Dynamic route state
+        self.blocked = False
+
+        # Subsidized route support
+        self.subsidized = False
+
+        # Minimum destination stay time
+        self.min_stay = 0
+
+    def add_aircraft_option(self, aircraft_option):
+        """
+        Add aircraft option to route.
+
+        Args:
+            aircraft_option:
+                AircraftOption object.
+        """
+
+        self.aircraft_options.append(
+            aircraft_option
+        )
+
+    def is_available(self):
+        """
+        Check whether route is available.
+
+        Returns:
+            bool:
+                True if route is operational.
+        """
+
+        return not self.blocked
+
+    def calculate_cost(self, aircraft_option):
+        """
+        Calculate route cost using selected aircraft.
+
+        Args:
+            aircraft_option:
+                AircraftOption object.
+
+        Returns:
+            float:
+                Total route cost.
+        """
+
+        return (
+            self.distance_km
+            * aircraft_option.cost_per_km
+        )
+
+    def calculate_time(self, aircraft_option):
+        """
+        Calculate route duration using selected aircraft.
+
+        Args:
+            aircraft_option:
+                AircraftOption object.
+
+        Returns:
+            float:
+                Flight duration in minutes.
+        """
+
+        return (
+            self.distance_km
+            * aircraft_option.time_per_km
+        )
+
+    def update_weight(self, criterion):
+        """
+        Update academic edge weight dynamically.
+
+        This method allows compatibility with the
+        professor's Dijkstra implementation.
+
+        Args:
+            criterion (str):
+                Optimization criterion:
+                    - distance
+                    - cost
+                    - time
+        """
+
+        self.criterion = criterion
+
+        # DISTANCE OPTIMIZATION
+        if criterion == "distance":
+
+            self.peso = self.distance_km
+
+        # COST OPTIMIZATION
+        elif criterion == "cost":
+
+            best_cost = min(
+
+                self.calculate_cost(aircraft)
+
+                for aircraft in self.aircraft_options
+            )
+
+            self.peso = best_cost
+
+        # TIME OPTIMIZATION
+        elif criterion == "time":
+
+            best_time = min(
+
+                self.calculate_time(aircraft)
+
+                for aircraft in self.aircraft_options
+            )
+
+            self.peso = best_time
+
+        else:
+
+            raise ValueError(
+                f"Invalid criterion: {criterion}"
+            )
+
+    def getPeso(self):
+        """
+        Retrieve current route weight.
+
+        Used by the professor's Dijkstra implementation.
+
+        Returns:
+            float:
+                Current route weight.
+        """
+
+        return self.peso
+
+    def __str__(self):
+        """
+        String representation of route.
+        """
+
+        return (
+            f"{self.origin.id} -> "
+            f"{self.destination.id} "
+            f"({self.distance_km} km)"
+        )
