@@ -185,133 +185,187 @@
 
   "rutas": [
 
-    {
-      "origen": "BOG",
-      "destino": "MDE",
-      "distanciaKm": 250,
-      "aeronaves": ["Commercial", "Regional"],
-      "costoBase": 0.18,
-      "estanciaMinima": 60
-    },
+  {
+    "origen": "BOG",
+    "destino": "MDE",
+    "distanciaKm": 250,
+    "aeronaves": ["Commercial", "Regional"],
+    "costoBase": 0.18,
+    "estanciaMinima": 60
+  },
 
-    {
-      "origen": "MDE",
-      "destino": "CTG",
-      "distanciaKm": 460,
-      "aeronaves": ["Commercial", "Helice"],
-      "costoBase": 0.18,
-      "estanciaMinima": 60
-    },
+  {
+    "origen": "MDE",
+    "destino": "CTG",
+    "distanciaKm": 460,
+    "aeronaves": ["Commercial", "Helice"],
+    "costoBase": 0.18,
+    "estanciaMinima": 60
+  },
 
-    {
-      "origen": "BOG",
-      "destino": "LIM",
-      "distanciaKm": 1880,
-      "aeronaves": ["Commercial"],
-      "costoBase": 0.25,
-      "estanciaMinima": 120
-    },
+  {
+    "origen": "BOG",
+    "destino": "LIM",
+    "distanciaKm": 1880,
+    "aeronaves": ["Commercial"],
+    "costoBase": 0.25,
+    "estanciaMinima": 120
+  },
 
-    {
-      "origen": "LIM",
-      "destino": "SCL",
-      "distanciaKm": 2450,
-      "aeronaves": ["Commercial"],
-      "costoBase": 0.25,
-      "estanciaMinima": 180
-    },
+  {
+    "origen": "LIM",
+    "destino": "SCL",
+    "distanciaKm": 2450,
+    "aeronaves": ["Commercial"],
+    "costoBase": 0.25,
+    "estanciaMinima": 180
+  },
 
-    {
-      "origen": "SCL",
-      "destino": "EZE",
-      "distanciaKm": 1130,
-      "aeronaves": ["Commercial", "Regional"],
-      "costoBase": 0.18,
-      "estanciaMinima": 120
-    },
+  {
+    "origen": "SCL",
+    "destino": "EZE",
+    "distanciaKm": 1130,
+    "aeronaves": ["Commercial", "Regional"],
+    "costoBase": 0.18,
+    "estanciaMinima": 120
+  },
 
-    {
-      "origen": "EZE",
-      "destino": "GRU",
-      "distanciaKm": 1670,
-      "aeronaves": ["Commercial"],
-      "costoBase": 0.20,
-      "estanciaMinima": 120
-    },
+  {
+    "origen": "EZE",
+    "destino": "GRU",
+    "distanciaKm": 1670,
+    "aeronaves": ["Commercial"],
+    "costoBase": 0.20,
+    "estanciaMinima": 120
+  },
 
-    {
-      "origen": "GRU",
-      "destino": "PTY",
-      "distanciaKm": 5070,
-      "aeronaves": ["Commercial"],
-      "costoBase": 0.25,
-      "estanciaMinima": 240
-    },
+  {
+    "origen": "GRU",
+    "destino": "PTY",
+    "distanciaKm": 5070,
+    "aeronaves": ["Commercial"],
+    "costoBase": 0.25,
+    "estanciaMinima": 240
+  },
 
-    {
-      "origen": "PTY",
-      "destino": "MEX",
-      "distanciaKm": 2400,
-      "aeronaves": ["Commercial", "Regional"],
-      "costoBase": 0.20,
-      "estanciaMinima": 180
-    },
+  {
+    "origen": "PTY",
+    "destino": "MEX",
+    "distanciaKm": 2400,
+    "aeronaves": ["Commercial", "Regional"],
+    "costoBase": 0.20,
+    "estanciaMinima": 180
+  },
 
-    {
-      "origen": "MEX",
-      "destino": "BOG",
-      "distanciaKm": 3160,
-      "aeronaves": ["Commercial"],
-      "costoBase": 0.25,
-      "estanciaMinima": 180
-    },
+  {
+    "origen": "MEX",
+    "destino": "BOG",
+    "distanciaKm": 3160,
+    "aeronaves": ["Commercial"],
+    "costoBase": 0.25,
+    "estanciaMinima": 180
+  },
 
-    {
-      "origen": "BOG",
-      "destino": "UIO",
-      "distanciaKm": 730,
-      "aeronaves": ["Regional", "Helice"],
-      "costoBase": 0,
-      "estanciaMinima": 60
-    },
+  {
+    "origen": "BOG",
+    "destino": "UIO",
+    "distanciaKm": 730,
+    "aeronaves": ["Regional", "Helice"],
+    "costoBase": 0,
+    "estanciaMinima": 60
+  },
 
-    {
-      "origen": "UIO",
-      "destino": "CCS",
-      "distanciaKm": 1900,
-      "aeronaves": ["Commercial"],
-      "costoBase": 0.20,
-      "estanciaMinima": 120
-    },
+  {
+    "origen": "UIO",
+    "destino": "CCS",
+    "distanciaKm": 1900,
+    "aeronaves": ["Commercial"],
+    "costoBase": 0.20,
+    "estanciaMinima": 120
+  },
 
-    {
-      "origen": "CCS",
-      "destino": "PTY",
-      "distanciaKm": 850,
-      "aeronaves": ["Regional"],
-      "costoBase": 0.15,
-      "estanciaMinima": 90
-    },
+  {
+    "origen": "CCS",
+    "destino": "PTY",
+    "distanciaKm": 850,
+    "aeronaves": ["Regional"],
+    "costoBase": 0.15,
+    "estanciaMinima": 90
+  },
 
-    {
-      "origen": "CLO",
-      "destino": "BOG",
-      "distanciaKm": 300,
-      "aeronaves": ["Regional"],
-      "costoBase": 0.15,
-      "estanciaMinima": 60
-    },
+  {
+    "origen": "CLO",
+    "destino": "BOG",
+    "distanciaKm": 300,
+    "aeronaves": ["Regional"],
+    "costoBase": 0.15,
+    "estanciaMinima": 60
+  },
 
-    {
-      "origen": "MDE",
-      "destino": "CLO",
-      "distanciaKm": 330,
-      "aeronaves": ["Helice"],
-      "costoBase": 0,
-      "estanciaMinima": 45
-    }
+  {
+    "origen": "MDE",
+    "destino": "CLO",
+    "distanciaKm": 330,
+    "aeronaves": ["Helice"],
+    "costoBase": 0,
+    "estanciaMinima": 45
+  },
 
-  ],
+  {
+    "origen": "BOG",
+    "destino": "PTY",
+    "distanciaKm": 760,
+    "aeronaves": ["Commercial", "Regional"],
+    "costoBase": 0.18,
+    "estanciaMinima": 90
+  },
+
+  {
+    "origen": "BOG",
+    "destino": "GRU",
+    "distanciaKm": 4330,
+    "aeronaves": ["Commercial"],
+    "costoBase": 0.25,
+    "estanciaMinima": 180
+  },
+
+  {
+    "origen": "MDE",
+    "destino": "LIM",
+    "distanciaKm": 2000,
+    "aeronaves": ["Commercial", "Regional"],
+    "costoBase": 0.20,
+    "estanciaMinima": 120
+  },
+
+  {
+    "origen": "LIM",
+    "destino": "PTY",
+    "distanciaKm": 2370,
+    "aeronaves": ["Commercial"],
+    "costoBase": 0.22,
+    "estanciaMinima": 180
+  },
+
+  {
+    "origen": "GRU",
+    "destino": "MEX",
+    "distanciaKm": 7420,
+    "aeronaves": ["Commercial"],
+    "costoBase": 0.28,
+    "estanciaMinima": 240
+  },
+
+  {
+    "origen": "SCL",
+    "destino": "GRU",
+    "distanciaKm": 2610,
+    "aeronaves": ["Commercial", "Regional"],
+    "costoBase": 0.22,
+    "estanciaMinima": 180
+  }
+
+],
 
   "configuracion": {
     "aeronaves": {
@@ -337,4 +391,5 @@
 
     "intervaloAlimentacion": 8
   }
+  
 }

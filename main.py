@@ -29,6 +29,15 @@ from src.algorithms.shortestpath import (
     print_route_summary
 )
 
+from src.core.constraints import (
+    TripConstraints
+)
+
+from src.algorithms.planning import (
+    maximize_destinations,
+    print_planning_summary
+)
+
 
 def main():
     """
@@ -233,6 +242,46 @@ def main():
     )
 
     print_route_summary(summary)
+
+    # -----------------------------------------
+    # DFS PLANNING TEST
+    # -----------------------------------------
+
+    print(
+        "\n========================================"
+    )
+
+    print(
+        " DFS PLANNING TEST"
+    )
+
+    print(
+        "========================================"
+    )
+
+    constraints = TripConstraints(
+
+        max_budget=3000,
+
+        max_time=10000,
+
+        allowed_aircraft=[],
+
+        avoid_hubs=False
+    )
+
+    solution = maximize_destinations(
+
+        graph,
+
+        "BOG",
+
+        constraints
+    )
+
+    print_planning_summary(
+        solution
+    )
 
     # -----------------------------------------
     # FINAL MESSAGE
