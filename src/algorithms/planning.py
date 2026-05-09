@@ -14,6 +14,10 @@ Main technique:
 """
 
 from src.core.traveler import Traveler
+from src.algorithms.dynamic_planning import (
+    simulate_airport_stay,
+    job_recommendation_engine
+)
 
 
 def maximize_destinations(
@@ -82,7 +86,13 @@ def maximize_destinations(
 
         "remaining_time": 0,
 
-        "total_destinations": 0
+        "total_destinations": 0,
+
+        "jobs_completed": [],
+
+        "activities_completed": [],
+
+        "flight_history": []
     }
 
     # -----------------------------------------
@@ -113,9 +123,7 @@ def maximize_destinations(
 
         if (
             current_total
-            > best_solution[
-                "total_destinations"
-            ]
+            > best_solution["total_destinations"]
         ):
 
             best_solution = {
@@ -134,7 +142,22 @@ def maximize_destinations(
                     .remaining_time,
 
                 "total_destinations":
-                    current_total
+                    current_total,
+
+                "jobs_completed":
+                    traveler_state
+                    .jobs_done
+                    .copy(),
+
+                "activities_completed":
+                    traveler_state
+                    .activities_done
+                    .copy(),
+
+                "flight_history":
+                    traveler_state
+                    .flight_history
+                    .copy()
             }
 
         # -----------------------------------------
@@ -231,6 +254,37 @@ def maximize_destinations(
             new_traveler.visit_airport(
                 destination
             )
+            # -----------------------------------------
+            # SIMULATE AIRPORT STAY
+            # -----------------------------------------
+
+            stay_summary = (
+                simulate_airport_stay(
+                    destination,
+                    new_traveler,
+                    activity_limit=2
+                )
+            )
+
+            # -----------------------------------------
+            # JOB RECOVERY SYSTEM
+            # -----------------------------------------
+
+            # If budget falls below threshold,
+            # attempt to recover money through jobs.
+            if (
+                new_traveler
+                .budget_threshold_reached()
+            ):
+
+                job_recommendation_engine(
+
+                    airport=destination,
+
+                    traveler=new_traveler,
+
+                    available_hours=6
+                )
 
             new_traveler.spend_money(
                 route_cost
@@ -338,3 +392,80 @@ def print_planning_summary(solution):
         f"Remaining Time: "
         f"{solution['remaining_time']:.2f} min"
     )
+    print()
+
+    print(
+        "===== FLIGHT HISTORY ====="
+    )
+
+    for flight in (
+        solution["flight_history"]
+    ):
+
+        print(
+
+            f"{flight['from']} -> "
+            f"{flight['to']} | "
+
+            f"{flight['aircraft']} | "
+
+            f"${flight['cost']:.2f}"
+        )
+
+    print()
+
+    print(
+        "===== ACTIVITIES ====="
+    )
+
+    if not solution[
+        "activities_completed"
+    ]:
+
+        print(
+            "No activities completed."
+        )
+
+    else:
+
+        for activity in (
+            solution[
+                "activities_completed"
+            ]
+        ):
+
+            print(
+
+                f"{activity['airport']} | "
+                f"{activity['activity']}"
+            )
+
+    print()
+
+    print(
+        "===== JOBS ====="
+    )
+
+    if not solution[
+        "jobs_completed"
+    ]:
+
+        print(
+            "No jobs completed."
+        )
+
+    else:
+
+        for job in (
+            solution[
+                "jobs_completed"
+            ]
+        ):
+
+            print(
+
+                f"{job['airport']} | "
+                f"{job['job_name']} | "
+
+                f"${job['earnings']:.2f}"
+            )

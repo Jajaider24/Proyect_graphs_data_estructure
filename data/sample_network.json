@@ -180,6 +180,166 @@
       "costoAlimentacion": 15,
       "actividades": [],
       "trabajos": []
+    },
+
+    {
+      "id": "MIA",
+      "nombre": "Miami International Airport",
+      "ciudad": "Miami",
+      "pais": "USA",
+      "zonaHoraria": "UTC-5",
+      "esHub": true,
+      "costoAlojamiento": 180,
+      "costoAlimentacion": 60,
+      "actividades": [
+        {
+          "nombre": "South Beach Tour",
+          "costoUSD": 120,
+          "duracionMin": 240
+        },
+        {
+          "nombre": "Boat Party",
+          "costoUSD": 180,
+          "duracionMin": 300
+        }
+      ],
+      "trabajos": [
+        {
+          "nombre": "Airport Assistant",
+          "tarifaHora": 24,
+          "maxHoras": 8
+        }
+      ]
+    },
+
+    {
+      "id": "JFK",
+      "nombre": "John F. Kennedy International Airport",
+      "ciudad": "New York",
+      "pais": "USA",
+      "zonaHoraria": "UTC-5",
+      "esHub": true,
+      "costoAlojamiento": 250,
+      "costoAlimentacion": 90,
+      "actividades": [
+        {
+          "nombre": "Times Square Tour",
+          "costoUSD": 150,
+          "duracionMin": 240
+        },
+        {
+          "nombre": "Broadway Show",
+          "costoUSD": 220,
+          "duracionMin": 180
+        }
+      ],
+      "trabajos": [
+        {
+          "nombre": "Baggage Coordinator",
+          "tarifaHora": 32,
+          "maxHoras": 8
+        }
+      ]
+    },
+
+    {
+      "id": "LAX",
+      "nombre": "Los Angeles International Airport",
+      "ciudad": "Los Angeles",
+      "pais": "USA",
+      "zonaHoraria": "UTC-8",
+      "esHub": true,
+      "costoAlojamiento": 230,
+      "costoAlimentacion": 85,
+      "actividades": [
+        {
+          "nombre": "Hollywood Tour",
+          "costoUSD": 180,
+          "duracionMin": 300
+        }
+      ],
+      "trabajos": [
+        {
+          "nombre": "Ground Operations Assistant",
+          "tarifaHora": 28,
+          "maxHoras": 7
+        }
+      ]
+    },
+
+    {
+      "id": "RIO",
+      "nombre": "Galeão International Airport",
+      "ciudad": "Rio de Janeiro",
+      "pais": "Brasil",
+      "zonaHoraria": "UTC-3",
+      "esHub": true,
+      "costoAlojamiento": 120,
+      "costoAlimentacion": 45,
+      "actividades": [
+        {
+          "nombre": "Copacabana Tour",
+          "costoUSD": 100,
+          "duracionMin": 240
+        }
+      ],
+      "trabajos": [
+        {
+          "nombre": "Tourism Assistant",
+          "tarifaHora": 18,
+          "maxHoras": 8
+        }
+      ]
+    },
+
+    {
+      "id": "HAV",
+      "nombre": "José Martí International Airport",
+      "ciudad": "Havana",
+      "pais": "Cuba",
+      "zonaHoraria": "UTC-5",
+      "esHub": false,
+      "costoAlojamiento": 80,
+      "costoAlimentacion": 30,
+      "actividades": [
+        {
+          "nombre": "Old Havana Tour",
+          "costoUSD": 60,
+          "duracionMin": 180
+        }
+      ],
+      "trabajos": [
+        {
+          "nombre": "Cultural Guide",
+          "tarifaHora": 14,
+          "maxHoras": 6
+        }
+      ]
+    },
+
+    {
+      "id": "CUN",
+      "nombre": "Cancún International Airport",
+      "ciudad": "Cancún",
+      "pais": "Mexico",
+      "zonaHoraria": "UTC-5",
+      "esHub": false,
+      "costoAlojamiento": 150,
+      "costoAlimentacion": 55,
+      "actividades": [
+        {
+          "nombre": "Beach Resort Day",
+          "costoUSD": 160,
+          "duracionMin": 360
+        }
+      ],
+      "trabajos": [
+        {
+          "nombre": "Hotel Reception Assistant",
+          "tarifaHora": 20,
+          "maxHoras": 8
+        }
+      ]
     }
   ],
 
@@ -202,6 +362,132 @@
     "costoBase": 0.18,
     "estanciaMinima": 60
   },
+
+  {
+  "origen": "PTY",
+  "destino": "MIA",
+  "distanciaKm": 1860,
+  "aeronaves": ["Commercial"],
+  "costoBase": 0.22,
+  "estanciaMinima": 120
+},
+
+{
+  "origen": "MIA",
+  "destino": "JFK",
+  "distanciaKm": 1760,
+  "aeronaves": ["Commercial", "Regional"],
+  "costoBase": 0.25,
+  "estanciaMinima": 120
+},
+
+{
+  "origen": "JFK",
+  "destino": "LAX",
+  "distanciaKm": 3980,
+  "aeronaves": ["Commercial"],
+  "costoBase": 0.30,
+  "estanciaMinima": 240
+},
+
+{
+  "origen": "MEX",
+  "destino": "CUN",
+  "distanciaKm": 1290,
+  "aeronaves": ["Regional", "Commercial"],
+  "costoBase": 0.18,
+  "estanciaMinima": 90
+},
+
+{
+  "origen": "HAV",
+  "destino": "PTY",
+  "distanciaKm": 1590,
+  "aeronaves": ["Commercial"],
+  "costoBase": 0.20,
+  "estanciaMinima": 120
+},
+
+{
+  "origen": "GRU",
+  "destino": "RIO",
+  "distanciaKm": 430,
+  "aeronaves": ["Regional", "Helice"],
+  "costoBase": 0.10,
+  "estanciaMinima": 60
+},
+
+{
+  "origen": "RIO",
+  "destino": "MIA",
+  "distanciaKm": 6720,
+  "aeronaves": ["Commercial"],
+  "costoBase": 0.30,
+  "estanciaMinima": 240
+},
+
+{
+  "origen": "BOG",
+  "destino": "MIA",
+  "distanciaKm": 2430,
+  "aeronaves": ["Commercial"],
+  "costoBase": 0.22,
+  "estanciaMinima": 180
+},
+
+{
+  "origen": "MIA",
+  "destino": "BOG",
+  "distanciaKm": 2430,
+  "aeronaves": ["Commercial"],
+  "costoBase": 0.22,
+  "estanciaMinima": 180
+},
+
+{
+  "origen": "LAX",
+  "destino": "MEX",
+  "distanciaKm": 2490,
+  "aeronaves": ["Commercial"],
+  "costoBase": 0.24,
+  "estanciaMinima": 180
+},
+
+{
+  "origen": "SCL",
+  "destino": "RIO",
+  "distanciaKm": 2920,
+  "aeronaves": ["Commercial"],
+  "costoBase": 0.25,
+  "estanciaMinima": 180
+},
+
+{
+  "origen": "CUN",
+  "destino": "HAV",
+  "distanciaKm": 510,
+  "aeronaves": ["Regional", "Helice"],
+  "costoBase": 0.12,
+  "estanciaMinima": 60
+},
+
+{
+  "origen": "JFK",
+  "destino": "MIA",
+  "distanciaKm": 1760,
+  "aeronaves": ["Commercial"],
+  "costoBase": 0.24,
+  "estanciaMinima": 120
+},
+
+{
+  "origen": "MIA",
+  "destino": "PTY",
+  "distanciaKm": 1860,
+  "aeronaves": ["Commercial"],
+  "costoBase": 0.22,
+  "estanciaMinima": 120
+},
 
   {
     "origen": "BOG",

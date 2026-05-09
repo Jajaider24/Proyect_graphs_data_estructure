@@ -38,6 +38,20 @@ from src.algorithms.planning import (
     print_planning_summary
 )
 
+from src.core.traveler import (
+    Traveler
+)
+
+from src.algorithms.dynamic_planning import (
+    job_recommendation_engine,
+    print_job_summary
+)
+
+from src.algorithms.dynamic_planning import (
+    simulate_airport_stay,
+    print_stay_summary
+)
+
 
 def main():
     """
@@ -283,6 +297,101 @@ def main():
         solution
     )
 
+        # -----------------------------------------
+    # JOB SIMULATION TEST
+    # -----------------------------------------
+
+    print(
+        "\n========================================"
+    )
+
+    print(
+        " JOB SIMULATION TEST"
+    )
+
+    print(
+        "========================================"
+    )
+
+    # Create traveler with low budget
+    traveler = Traveler(
+
+        current_airport=
+            graph.get_airport("BOG"),
+
+        initial_budget=1000,
+
+        available_time=5000
+    )
+
+    # Force threshold activation
+    traveler.current_budget = 300
+
+    result = job_recommendation_engine(
+
+        airport=
+            graph.get_airport("BOG"),
+
+        traveler=traveler,
+
+        available_hours=6
+    )
+
+    print_job_summary(result)
+
+        # -----------------------------------------
+    # AIRPORT STAY TEST
+    # -----------------------------------------
+
+    print(
+        "\n========================================"
+    )
+
+    print(
+        " AIRPORT STAY TEST"
+    )
+
+    print(
+        "========================================"
+    )
+
+    traveler = Traveler(
+
+        current_airport=
+            graph.get_airport("LIM"),
+
+        initial_budget=2000,
+
+        available_time=8000
+    )
+
+    stay_summary = simulate_airport_stay(
+
+        airport=
+            graph.get_airport("LIM"),
+
+        traveler=traveler,
+
+        activity_limit=2
+    )
+
+    print_stay_summary(
+        stay_summary
+    )
+
+    print()
+
+    print(
+        f"Traveler Remaining Budget: "
+        f"${traveler.current_budget:.2f}"
+    )
+
+    print(
+        f"Traveler Remaining Time: "
+        f"{traveler.remaining_time:.2f} min"
+    )
+
+
     # -----------------------------------------
     # FINAL MESSAGE
     # -----------------------------------------
@@ -301,5 +410,5 @@ def main():
 
 
 if __name__ == "__main__":
-
-    main()
+    
+ main()

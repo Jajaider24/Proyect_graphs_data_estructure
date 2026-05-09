@@ -1,59 +1,480 @@
 """
-Dynamic programming algorithms - Advanced itinerary planning with budget management.
+Dynamic planning algorithms - Advanced itinerary simulation.
 
-Functions:
-    - dynamic_budget_planning(): Plan itinerary with dynamic budget adjustments via jobs
-    - calculate_activity_schedule(): Calculate optimal activity scheduling at each airport
-    - job_recommendation_engine(): Recommend jobs based on budget threshold
+This module contains dynamic simulation systems used for:
+    - Budget recovery through jobs
+    - Activity scheduling
+    - Dynamic traveler decisions
+    - Airport stop management
 """
 
 
-def dynamic_budget_planning(graph, start_airport, initial_budget, time_available):
+def job_recommendation_engine(
+    airport,
+    traveler,
+    available_hours
+):
     """
-    Advanced planning with dynamic budget management through job opportunities.
-    Step-by-step decision making system for traveler.
-    
+    Recommend jobs when the traveler budget
+    falls below the minimum threshold.
+
+    According to project rules:
+        Jobs become available when remaining
+        budget <= 35% of initial budget.
+
     Args:
-        graph: The airline network graph
-        start_airport: Starting airport code
-        initial_budget: Initial budget in USD
-        time_available: Available time in minutes
-        
+        airport:
+            Current airport object.
+
+        traveler:
+            Traveler object.
+
+        available_hours (int):
+            Maximum work hours available.
+
     Returns:
-        Step-by-step itinerary with decisions and final report
+        dict:
+            Job recommendation result.
     """
-    pass
+
+    # -----------------------------------------
+    # CHECK BUDGET THRESHOLD
+    # -----------------------------------------
+
+    if not traveler.budget_threshold_reached():
+
+        return {
+
+            "worked": False,
+
+            "reason":
+                "Budget threshold not reached.",
+
+            "earnings": 0
+        }
+
+    # -----------------------------------------
+    # CHECK AVAILABLE JOBS
+    # -----------------------------------------
+
+    if not airport.trabajos:
+
+        return {
+
+            "worked": False,
+
+            "reason":
+                "No jobs available at airport.",
+
+            "earnings": 0
+        }
+
+    # -----------------------------------------
+    # FIND BEST JOB
+    # -----------------------------------------
+
+    best_job = None
+
+    best_earnings = 0
+
+    best_hours = 0
+
+    for job in airport.trabajos:
+
+        # Maximum hours allowed
+        workable_hours = min(
+
+            available_hours,
+
+            job["maxHoras"]
+        )
+
+        # Calculate earnings
+        earnings = (
+            workable_hours
+            * job["tarifaHora"]
+        )
+
+        if earnings > best_earnings:
+
+            best_earnings = earnings
+
+            best_job = job
+
+            best_hours = workable_hours
+
+    # -----------------------------------------
+    # APPLY JOB TO TRAVELER
+    # -----------------------------------------
+
+    traveler.earn_money(
+        best_earnings
+    )
+
+    traveler.consume_time(
+        best_hours * 60
+    )
+
+    traveler.jobs_done.append({
+
+        "airport": airport.id,
+
+        "job_name":
+            best_job["nombre"],
+
+        "hours":
+            best_hours,
+
+        "earnings":
+            best_earnings
+    })
+
+    # -----------------------------------------
+    # RETURN RESULT
+    # -----------------------------------------
+
+    return {
+
+        "worked": True,
+
+        "airport": airport.id,
+
+        "job_name":
+            best_job["nombre"],
+
+        "hours":
+            best_hours,
+
+        "earnings":
+            best_earnings,
+
+        "remaining_budget":
+            traveler.current_budget,
+
+        "remaining_time":
+            traveler.remaining_time
+    }
 
 
-def calculate_activity_schedule(airport, arrival_time, available_time, current_budget):
+def print_job_summary(result):
     """
-    Calculate optimal activity and job scheduling for airport stopover.
-    Considers mandatory activities (lodging, food) and optional activities.
-    
+    Print formatted job result.
+
     Args:
-        airport: Airport object
-        arrival_time: Time of arrival in minutes
-        available_time: Time available at airport in minutes
-        current_budget: Available budget in USD
-        
-    Returns:
-        Optimal schedule of activities and jobs
+        result (dict):
+            Job simulation result.
     """
-    pass
 
+    print(
+        "\n===== JOB SIMULATION =====\n"
+    )
 
-def job_recommendation_engine(airport, current_budget, initial_budget, available_hours):
+    if not result["worked"]:
+
+        print(
+            f"No work performed.\n"
+            f"Reason: {result['reason']}"
+        )
+
+        return
+
+    print(
+        f"Airport: {result['airport']}"
+    )
+
+    print(
+        f"Job: {result['job_name']}"
+    )
+
+    print(
+        f"Hours Worked: "
+        f"{result['hours']}"
+    )
+
+    print(
+        f"Earnings: "
+        f"${result['earnings']:.2f}"
+    )
+
+    print()
+
+    print(
+        f"Remaining Budget: "
+        f"${result['remaining_budget']:.2f}"
+    )
+
+    print(
+        f"Remaining Time: "
+        f"{result['remaining_time']:.2f} min"
+    )
+
+def simulate_airport_stay(
+    airport,
+    traveler,
+    activity_limit=2
+):
     """
-    Recommend jobs based on budget threshold (35% of initial budget).
-    Calculate potential earnings from available jobs.
-    
+    Simulate traveler stay at an airport.
+
+    The simulation includes:
+        - Accommodation expenses
+        - Food expenses
+        - Tourist activities
+        - Time consumption
+
     Args:
-        airport: Airport object
-        current_budget: Current available budget
-        initial_budget: Initial budget for threshold calculation
-        available_hours: Hours available for work
-        
+        airport:
+            Airport object.
+
+        traveler:
+            Traveler object.
+
+        activity_limit (int):
+            Maximum number of activities.
+
     Returns:
-        Recommended jobs with earning projections
+        dict:
+            Stay simulation summary.
     """
-    pass
+
+    # -----------------------------------------
+    # INITIALIZE SUMMARY
+    # -----------------------------------------
+
+    summary = {
+
+        "airport": airport.id,
+
+        "activities_done": [],
+
+        "lodging_cost": 0,
+
+        "food_cost": 0,
+
+        "activities_cost": 0,
+
+        "activities_time": 0,
+
+        "total_cost": 0,
+
+        "total_time": 0
+    }
+
+    # -----------------------------------------
+    # ACCOMMODATION
+    # -----------------------------------------
+
+    lodging_cost = (
+        airport.costo_alojamiento
+    )
+
+    traveler.spend_money(
+        lodging_cost
+    )
+
+    summary["lodging_cost"] = (
+        lodging_cost
+    )
+
+    # Assume 1 hotel night = 8 hours
+    lodging_time = 480
+
+    traveler.consume_time(
+        lodging_time
+    )
+
+    summary["total_time"] += (
+        lodging_time
+    )
+
+    # -----------------------------------------
+    # FOOD
+    # -----------------------------------------
+
+    food_cost = (
+        airport.costo_alimentacion
+    )
+
+    traveler.spend_money(
+        food_cost
+    )
+
+    summary["food_cost"] = (
+        food_cost
+    )
+
+    # Assume meals consume 1 hour
+    food_time = 60
+
+    traveler.consume_time(
+        food_time
+    )
+
+    summary["total_time"] += (
+        food_time
+    )
+
+    # -----------------------------------------
+    # ACTIVITIES
+    # -----------------------------------------
+
+    selected_activities = (
+        airport.actividades[
+            :activity_limit
+        ]
+    )
+
+    for activity in (
+        selected_activities
+    ):
+
+        activity_cost = (
+                activity["costoUSD"]
+            )
+
+        activity_time = (
+                activity["duracionMin"]
+            )
+        if (
+            traveler.current_budget
+            < activity_cost
+        ):
+         continue
+
+        # Skip activity if no time
+        if (
+            traveler.remaining_time
+            < activity_time
+        ):
+            continue
+
+        # Apply activity effects
+        traveler.spend_money(
+            activity_cost
+        )
+
+        traveler.consume_time(
+            activity_time
+        )
+
+        traveler.activities_done.append({
+
+            "airport":
+                airport.id,
+
+            "activity":
+                activity["nombre"]
+        })
+
+        summary[
+            "activities_done"
+        ].append(
+
+            activity["nombre"]
+        )
+
+        summary[
+            "activities_cost"
+        ] += activity_cost
+
+        summary[
+            "activities_time"
+        ] += activity_time
+
+    # -----------------------------------------
+    # CALCULATE TOTALS
+    # -----------------------------------------
+
+    total_cost = (
+
+        summary["lodging_cost"]
+
+        + summary["food_cost"]
+
+        + summary["activities_cost"]
+    )
+
+    summary["total_cost"] = (
+        total_cost
+    )
+
+    summary["total_time"] += (
+        summary["activities_time"]
+    )
+
+    # -----------------------------------------
+    # RETURN SUMMARY
+    # -----------------------------------------
+
+    return summary
+
+
+def print_stay_summary(summary):
+    """
+    Print formatted airport stay summary.
+
+    Args:
+        summary (dict):
+            Stay simulation summary.
+    """
+
+    print(
+        "\n===== AIRPORT STAY SUMMARY =====\n"
+    )
+
+    print(
+        f"Airport: {summary['airport']}"
+    )
+
+    print()
+
+    print(
+        f"Lodging Cost: "
+        f"${summary['lodging_cost']:.2f}"
+    )
+
+    print(
+        f"Food Cost: "
+        f"${summary['food_cost']:.2f}"
+    )
+
+    print(
+        f"Activities Cost: "
+        f"${summary['activities_cost']:.2f}"
+    )
+
+    print()
+
+    print(
+        "Activities:"
+    )
+
+    if not summary["activities_done"]:
+
+        print(
+            "   No activities performed."
+        )
+
+    else:
+
+        for activity in (
+            summary["activities_done"]
+        ):
+
+            print(
+                f"   - {activity}"
+            )
+
+    print()
+
+    print(
+        f"Total Cost: "
+        f"${summary['total_cost']:.2f}"
+    )
+
+    print(
+        f"Total Time: "
+        f"{summary['total_time']} min"
+    )
+
+    
