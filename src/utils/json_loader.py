@@ -221,13 +221,21 @@ def build_graph_from_json(data):
             )
 
             aircraft_option = AircraftOption(
+
                 name=aircraft_name,
+
                 cost_per_km=aircraft_data.get(
                     "costoKm",
                     0
                 ),
-                time_per_km=aircraft_data.get(
-                    "tiempoKm",
+
+                speed_kmh=aircraft_data.get(
+                    "velocidadKmh",
+                    0
+                ),
+
+                fixed_time_min=aircraft_data.get(
+                    "tiempoFijoMin",
                     0
                 )
             )

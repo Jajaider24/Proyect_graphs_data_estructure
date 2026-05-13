@@ -17,20 +17,20 @@ class AircraftOption:
     """
     Represents an aircraft option available for a route.
 
-    Each route can support multiple aircraft types
-    with different operational costs and durations.
+    Each aircraft has:
+        - Operational cost
+        - Speed
+        - Fixed boarding time
 
-    Example:
-        - Commercial aircraft
-        - Regional aircraft
-        - Helicopter aircraft
+    This allows realistic multicriteria optimization.
     """
 
     def __init__(
         self,
         name,
         cost_per_km,
-        time_per_km
+        speed_kmh,
+        fixed_time_min
     ):
         """
         Initialize aircraft option.
@@ -42,25 +42,60 @@ class AircraftOption:
             cost_per_km (float):
                 Operational cost per kilometer.
 
-            time_per_km (float):
-                Flight duration in minutes per kilometer.
+            speed_kmh (float):
+                Aircraft speed in km/h.
+
+            fixed_time_min (float):
+                Boarding + airport fixed time.
         """
 
         self.name = name
 
         self.cost_per_km = cost_per_km
 
-        self.time_per_km = time_per_km
+        self.speed_kmh = speed_kmh
+
+        self.fixed_time_min = fixed_time_min
+
+    def calculate_time(
+        self,
+        distance_km
+    ):
+        """
+        Calculate flight duration.
+
+        Formula:
+            time = flight_time + fixed_time
+
+        Returns:
+            float:
+                Duration in minutes.
+        """
+
+        # Convert hours to minutes
+        flight_time = (
+
+            distance_km
+            / self.speed_kmh
+        ) * 60
+
+        return (
+            flight_time
+            + self.fixed_time_min
+        )
 
     def __str__(self):
         """
-        String representation of aircraft option.
+        String representation.
         """
 
         return (
+
             f"{self.name} | "
+
             f"Cost/km={self.cost_per_km} | "
-            f"Time/km={self.time_per_km}"
+
+            f"Speed={self.speed_kmh} km/h"
         )
 
 
@@ -184,9 +219,8 @@ class Route(Arista):
                 Flight duration in minutes.
         """
 
-        return (
-            self.distance_km
-            * aircraft_option.time_per_km
+        return aircraft_option.calculate_time(
+        self.distance_km
         )
 
     def update_weight(self, criterion):

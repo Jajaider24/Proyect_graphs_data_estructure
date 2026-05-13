@@ -189,26 +189,26 @@
       "pais": "USA",
       "zonaHoraria": "UTC-5",
       "esHub": true,
-      "costoAlojamiento": 180,
-      "costoAlimentacion": 60,
+      "costoAlojamiento": 260,
+      "costoAlimentacion": 95,
       "actividades": [
-        {
-          "nombre": "South Beach Tour",
-          "costoUSD": 120,
-          "duracionMin": 240
-        },
-        {
-          "nombre": "Boat Party",
-          "costoUSD": 180,
-          "duracionMin": 300
-        }
+      {
+      "nombre": "South Beach VIP Tour",
+      "costoUSD": 320,
+      "duracionMin": 420
+      },
+      {
+      "nombre": "Luxury Yacht Party",
+      "costoUSD": 480,
+      "duracionMin": 540
+      }
       ],
       "trabajos": [
-        {
-          "nombre": "Airport Assistant",
-          "tarifaHora": 24,
-          "maxHoras": 8
-        }
+      {
+      "nombre": "Airport Operations Assistant",
+      "tarifaHora": 38,
+      "maxHoras": 9
+      }
       ]
     },
 
@@ -219,52 +219,52 @@
       "pais": "USA",
       "zonaHoraria": "UTC-5",
       "esHub": true,
-      "costoAlojamiento": 250,
-      "costoAlimentacion": 90,
+      "costoAlojamiento": 340,
+      "costoAlimentacion": 120,
       "actividades": [
-        {
-          "nombre": "Times Square Tour",
-          "costoUSD": 150,
-          "duracionMin": 240
-        },
-        {
-          "nombre": "Broadway Show",
-          "costoUSD": 220,
-          "duracionMin": 180
-        }
-      ],
+      {
+      "nombre": "Times Square VIP Tour",
+      "costoUSD": 450,
+      "duracionMin": 360
+      },
+      {
+      "nombre": "Broadway Premium Show",
+      "costoUSD": 600,
+      "duracionMin": 300
+      }
+        ],
       "trabajos": [
-        {
-          "nombre": "Baggage Coordinator",
-          "tarifaHora": 32,
-          "maxHoras": 8
-        }
-      ]
-    },
+      {
+      "nombre": "Baggage Coordinator",
+      "tarifaHora": 45,
+      "maxHoras": 10
+          }
+        ]
+      },
 
     {
-      "id": "LAX",
-      "nombre": "Los Angeles International Airport",
-      "ciudad": "Los Angeles",
-      "pais": "USA",
-      "zonaHoraria": "UTC-8",
-      "esHub": true,
-      "costoAlojamiento": 230,
-      "costoAlimentacion": 85,
-      "actividades": [
-        {
-          "nombre": "Hollywood Tour",
-          "costoUSD": 180,
-          "duracionMin": 300
-        }
-      ],
-      "trabajos": [
-        {
-          "nombre": "Ground Operations Assistant",
-          "tarifaHora": 28,
-          "maxHoras": 7
-        }
-      ]
+    "id": "LAX",
+    "nombre": "Los Angeles International Airport",
+    "ciudad": "Los Angeles",
+    "pais": "USA",
+    "zonaHoraria": "UTC-8",
+    "esHub": true,
+    "costoAlojamiento": 310,
+    "costoAlimentacion": 110,
+    "actividades": [
+    {
+    "nombre": "Hollywood Celebrity Tour",
+    "costoUSD": 420,
+    "duracionMin": 480
+    }
+    ],
+    "trabajos": [
+    {
+    "nombre": "Ground Operations Assistant",
+    "tarifaHora": 42,
+    "maxHoras": 9
+    }
+    ]
     },
 
     {
@@ -274,19 +274,19 @@
       "pais": "Brasil",
       "zonaHoraria": "UTC-3",
       "esHub": true,
-      "costoAlojamiento": 120,
-      "costoAlimentacion": 45,
+      "costoAlojamiento": 190,
+      "costoAlimentacion": 70,
       "actividades": [
         {
-          "nombre": "Copacabana Tour",
-          "costoUSD": 100,
-          "duracionMin": 240
+          "nombre": "Copacabana Premium Tour",
+          "costoUSD": 260,
+          "duracionMin": 360
         }
       ],
       "trabajos": [
         {
           "nombre": "Tourism Assistant",
-          "tarifaHora": 18,
+          "tarifaHora": 30,
           "maxHoras": 8
         }
       ]
@@ -324,19 +324,19 @@
       "pais": "Mexico",
       "zonaHoraria": "UTC-5",
       "esHub": false,
-      "costoAlojamiento": 150,
-      "costoAlimentacion": 55,
+      "costoAlojamiento": 240,
+      "costoAlimentacion": 90,
       "actividades": [
         {
-          "nombre": "Beach Resort Day",
-          "costoUSD": 160,
-          "duracionMin": 360
+          "nombre": "Luxury Beach Resort Experience",
+          "costoUSD": 380,
+          "duracionMin": 540
         }
       ],
       "trabajos": [
         {
           "nombre": "Hotel Reception Assistant",
-          "tarifaHora": 20,
+          "tarifaHora": 28,
           "maxHoras": 8
         }
       ]
@@ -654,28 +654,42 @@
 ],
 
   "configuracion": {
-    "aeronaves": {
-      "Commercial": {
-        "costoKm": 0.18,
-        "tiempoKm": 0.7
-      },
 
-      "Regional": {
-        "costoKm": 0.25,
-        "tiempoKm": 1.1
-      },
+  "aeronaves": {
 
-      "Helice": {
-        "costoKm": 0.12,
-        "tiempoKm": 2.5
-      }
+    "Helice": {
+
+      "costoKm": 0.05,
+
+      "velocidadKmh": 120,
+
+      "tiempoFijoMin": 25
     },
 
-    "presupuestoMinimoPorc": 35,
+    "Regional": {
 
-    "intervaloAlojamiento": 20,
+      "costoKm": 0.22,
 
-    "intervaloAlimentacion": 8
-  }
+      "velocidadKmh": 520,
+
+      "tiempoFijoMin": 45
+    },
+
+    "Commercial": {
+
+      "costoKm": 0.42,
+
+      "velocidadKmh": 920,
+
+      "tiempoFijoMin": 70
+    }
+  },
+
+  "presupuestoMinimoPorc": 35,
+
+  "intervaloAlojamiento": 20,
+
+  "intervaloAlimentacion": 8
+}
   
 }
