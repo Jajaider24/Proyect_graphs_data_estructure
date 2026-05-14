@@ -340,7 +340,152 @@
           "maxHoras": 8
         }
       ]
-    }
+    },
+    {
+      "id": "BAQ",
+      "nombre": "Aeropuerto Ernesto Cortissoz",
+      "ciudad": "Barranquilla",
+      "pais": "Colombia",
+      "zonaHoraria": "UTC-5",
+      "esHub": false,
+      "costoAlojamiento": 110,
+      "costoAlimentacion": 35,
+      "actividades": [],
+      "trabajos": []
+      },
+      {
+      "id": "SMR",
+      "nombre": "Aeropuerto Simón Bolívar",
+      "ciudad": "Santa Marta",
+      "pais": "Colombia",
+      "zonaHoraria": "UTC-5",
+      "esHub": false,
+      "costoAlojamiento": 95,
+      "costoAlimentacion": 28,
+      "actividades": [],
+      "trabajos": []
+      },
+      {
+      "id": "PEI",
+      "nombre": "Aeropuerto Matecaña",
+      "ciudad": "Pereira",
+      "pais": "Colombia",
+      "zonaHoraria": "UTC-5",
+      "esHub": false,
+      "costoAlojamiento": 90,
+      "costoAlimentacion": 25,
+      "actividades": [],
+      "trabajos": []
+      },
+      {
+      "id": "AXM",
+      "nombre": "Aeropuerto El Edén",
+      "ciudad": "Armenia",
+      "pais": "Colombia",
+      "zonaHoraria": "UTC-5",
+      "esHub": false,
+      "costoAlojamiento": 85,
+      "costoAlimentacion": 24,
+      "actividades": [],
+      "trabajos": []
+      },
+      {
+      "id": "GDL",
+      "nombre": "Aeropuerto Guadalajara",
+      "ciudad": "Guadalajara",
+      "pais": "México",
+      "zonaHoraria": "UTC-6",
+      "esHub": true,
+      "costoAlojamiento": 150,
+      "costoAlimentacion": 42,
+      "actividades": [],
+      "trabajos": []
+      },
+      {
+      "id": "MTY",
+      "nombre": "Aeropuerto Monterrey",
+      "ciudad": "Monterrey",
+      "pais": "México",
+      "zonaHoraria": "UTC-6",
+      "esHub": true,
+      "costoAlojamiento": 160,
+      "costoAlimentacion": 45,
+      "actividades": [],
+      "trabajos": []
+      },
+      {
+      "id": "SJO",
+      "nombre": "Aeropuerto Juan Santamaría",
+      "ciudad": "San José",
+      "pais": "Costa Rica",
+      "zonaHoraria": "UTC-6",
+      "esHub": false,
+      "costoAlojamiento": 140,
+      "costoAlimentacion": 40,
+      "actividades": [],
+      "trabajos": []
+      },
+      {
+      "id": "SAL",
+      "nombre": "Aeropuerto Monseñor Romero",
+      "ciudad": "San Salvador",
+      "pais": "El Salvador",
+      "zonaHoraria": "UTC-6",
+      "esHub": false,
+      "costoAlojamiento": 130,
+      "costoAlimentacion": 38,
+      "actividades": [],
+      "trabajos": []
+      },
+      {
+      "id": "GUA",
+      "nombre": "Aeropuerto La Aurora",
+      "ciudad": "Guatemala City",
+      "pais": "Guatemala",
+      "zonaHoraria": "UTC-6",
+      "esHub": false,
+      "costoAlojamiento": 135,
+      "costoAlimentacion": 39,
+      "actividades": [],
+      "trabajos": []
+      },
+      {
+      "id": "ATL",
+      "nombre": "Hartsfield Jackson Airport",
+      "ciudad": "Atlanta",
+      "pais": "USA",
+      "zonaHoraria": "UTC-5",
+      "esHub": true,
+      "costoAlojamiento": 260,
+      "costoAlimentacion": 95,
+      "actividades": [],
+      "trabajos": []
+      },
+      {
+      "id": "ORD",
+      "nombre": "O'Hare International Airport",
+      "ciudad": "Chicago",
+      "pais": "USA",
+      "zonaHoraria": "UTC-6",
+      "esHub": true,
+      "costoAlojamiento": 270,
+      "costoAlimentacion": 100,
+      "actividades": [],
+      "trabajos": []
+      },
+      {
+      "id": "BSB",
+      "nombre": "Brasília International Airport",
+      "ciudad": "Brasília",
+      "pais": "Brasil",
+      "zonaHoraria": "UTC-3",
+      "esHub": false,
+      "costoAlojamiento": 170,
+      "costoAlimentacion": 55,
+      "actividades": [],
+      "trabajos": []
+      }
+
   ],
 
   "rutas": [
@@ -649,7 +794,95 @@
     "aeronaves": ["Commercial", "Regional"],
     "costoBase": 0.22,
     "estanciaMinima": 180
-  }
+  },
+  {
+    "origen": "BOG",
+    "destino": "BAQ",
+    "distanciaKm": 700,
+    "aeronaves": ["Regional", "Helice"],
+    "costoBase": 0.1,
+    "estanciaMinima": 60
+    },
+    {
+    "origen": "BAQ",
+    "destino": "SMR",
+    "distanciaKm": 100,
+    "aeronaves": ["Helice"],
+    "costoBase": 0,
+    "estanciaMinima": 30
+    },
+    {
+    "origen": "PEI",
+    "destino": "AXM",
+    "distanciaKm": 45,
+    "aeronaves": ["Helice"],
+    "costoBase": 0,
+    "estanciaMinima": 20
+    },
+    {
+    "origen": "MEX",
+    "destino": "GDL",
+    "distanciaKm": 550,
+    "aeronaves": ["Regional"],
+    "costoBase": 0.08,
+    "estanciaMinima": 60
+    },
+    {
+    "origen": "MEX",
+    "destino": "MTY",
+    "distanciaKm": 900,
+    "aeronaves": ["Regional", "Commercial"],
+    "costoBase": 0.12,
+    "estanciaMinima": 90
+    },
+    {
+    "origen": "PTY",
+    "destino": "SJO",
+    "distanciaKm": 520,
+    "aeronaves": ["Regional"],
+    "costoBase": 0.08,
+    "estanciaMinima": 60
+    },
+    {
+    "origen": "SJO",
+    "destino": "SAL",
+    "distanciaKm": 860,
+    "aeronaves": ["Regional"],
+    "costoBase": 0.1,
+    "estanciaMinima": 90
+    },
+    {
+    "origen": "SAL",
+    "destino": "GUA",
+    "distanciaKm": 250,
+    "aeronaves": ["Helice", "Regional"],
+    "costoBase": 0,
+    "estanciaMinima": 40
+    },
+    {
+    "origen": "MIA",
+    "destino": "ATL",
+    "distanciaKm": 975,
+    "aeronaves": ["Commercial"],
+    "costoBase": 0.14,
+    "estanciaMinima": 90
+    },
+    {
+    "origen": "ATL",
+    "destino": "ORD",
+    "distanciaKm": 975,
+    "aeronaves": ["Commercial"],
+    "costoBase": 0.14,
+    "estanciaMinima": 90
+    },
+    {
+    "origen": "GRU",
+    "destino": "BSB",
+    "distanciaKm": 870,
+    "aeronaves": ["Regional"],
+    "costoBase": 0.1,
+    "estanciaMinima": 60
+}
 
 ],
 

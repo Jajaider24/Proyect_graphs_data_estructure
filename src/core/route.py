@@ -117,7 +117,8 @@ class Route(Arista):
         self,
         origin,
         destination,
-        distance_km
+        distance_km,
+        is_available=True
     ):
         """
         Initialize route.
@@ -163,6 +164,8 @@ class Route(Arista):
 
         # Minimum destination stay time
         self.min_stay = 0
+
+        self.is_available = is_available
 
     def add_aircraft_option(self, aircraft_option):
         """

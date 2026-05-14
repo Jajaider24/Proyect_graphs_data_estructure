@@ -121,6 +121,7 @@ class Graph(Grafo):
         return list(
             self.airports.values()
         )
+    
 
     def update_all_weights(self, criterion):
         """
@@ -197,3 +198,39 @@ class Graph(Grafo):
             )
 
         return total
+
+    def disable_route(
+        self,
+        origin_id,
+        destination_id
+    ):
+        """
+        Disable a route dynamically.
+        """
+
+        for route in self.airports[origin_id].routes:
+
+            if (
+                route.destination.id
+                == destination_id
+            ):
+
+                route.is_available = False
+
+    def enable_route(
+        self,
+        origin_id,
+        destination_id
+    ):
+        """
+        Enable a route dynamically.
+        """
+
+        for route in self.airports[origin_id].routes:
+
+            if (
+                route.destination.id
+                == destination_id
+            ):
+
+                route.is_available = True

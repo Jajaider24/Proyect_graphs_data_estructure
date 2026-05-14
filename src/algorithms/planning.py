@@ -167,7 +167,7 @@ def maximize_destinations(
         for route in current_airport.routes:
 
             # Ignore blocked routes
-            if not route.is_available():
+            if not route.is_available:
                 continue
 
             destination = (

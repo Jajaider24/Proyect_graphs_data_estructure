@@ -56,7 +56,7 @@ def depth_first_search(graph, start_id):
         for route in airport.routes:
             
             # Ignore blocked routes
-            if not route.is_available():
+            if not route.is_available:
                 continue
 
             neighbor = route.destination
@@ -117,7 +117,7 @@ def breadth_first_search(graph, start_id):
 
         for route in current_airport.routes:
             # Ignore blocked routes
-            if not route.is_available():
+            if not route.is_available:
                 continue
 
             neighbor = route.destination

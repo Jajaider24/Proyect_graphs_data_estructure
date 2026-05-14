@@ -149,6 +149,8 @@ def reconstruct_route_details(
 
         # Find matching route
         for route in current_airport.routes:
+            if not route.is_available:
+                continue
 
             if (
                 route.destination.id

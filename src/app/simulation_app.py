@@ -20,6 +20,10 @@ from src.services.report_service import (
     ReportService
 )
 
+from src.services.network_service import (
+    NetworkService
+)
+
 
 class SimulationApp:
     """
@@ -45,6 +49,10 @@ class SimulationApp:
 
         self.report_service = (
             ReportService()
+        )
+
+        self.network_service = (
+            NetworkService()
         )
 
     def run(self):
@@ -121,6 +129,12 @@ class SimulationApp:
         )
 
         print()
+
+        self.network_service.block_route(
+            graph,
+            "BOG",
+            "PTY"
+        )
 
         # -----------------------------------------
         # DIJKSTRA TEST
