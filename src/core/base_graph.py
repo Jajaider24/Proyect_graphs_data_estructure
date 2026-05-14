@@ -311,9 +311,9 @@ class Grafo:
             ):
 
                 # Ignore blocked routes
-                if hasattr(arista, "blocked"):
+                if hasattr(arista, "is_available"):
 
-                    if arista.blocked:
+                    if not arista.is_available:
                         continue
 
                 neighbor = (

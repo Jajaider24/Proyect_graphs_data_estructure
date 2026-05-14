@@ -1,22 +1,24 @@
 """
-Project entrypoint.
+Main project entry point.
 """
 
-from src.app.simulation_app import (
-    SimulationApp
+import flet as ft
+
+from src.ui.main_window import (
+    MainWindow
 )
 
 
-def main():
+def main(page: ft.Page):
     """
-    Application entrypoint.
+    Flet entrypoint.
     """
 
-    app = SimulationApp()
+    window = MainWindow()
 
-    app.run()
+    window.start(page)
 
 
 if __name__ == "__main__":
 
-    main()
+    ft.run(main)
