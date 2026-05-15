@@ -1,5 +1,5 @@
 # Core dependencies for SkyRoute Planner
-matplotlib==3.7.1
+matplotlib==3.8.0
 networkx==3.1
 
 # FastAPI Backend
@@ -9,8 +9,8 @@ pydantic==2.5.0
 pydantic-settings==2.1.0
 
 # Frontend (Flet)
-flet==0.21.0
-httpx==0.26.0
+flet==0.85.1
+httpx==0.28.1
 
 # Utilities
 python-dotenv==1.0.0

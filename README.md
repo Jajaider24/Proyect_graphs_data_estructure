@@ -54,3 +54,26 @@ proyecto/
 │
 └── requirements.txt        # Dependencias
 ```
+
+Correr el proyecto 
+
+1. INICIAR SOLO EL FRONTEND (Flet):
+   ──────────────────────────────────
+   python frontend/main.py
+
+2. INICIAR SOLO EL BACKEND (FastAPI):
+   ────────────────────────────────────
+   python -m uvicorn api.main:app --reload --host 127.0.0.1 --port 8000
+
+3. INICIAR AMBOS (Recomendado):
+   ──────────────────────────────
+   # Terminal 1: Backend
+   python -m uvicorn api.main:app --reload
+
+   # Terminal 2: Frontend
+   python frontend/main.py
+
+4. VERIFICAR INSTALACIÓN:
+   ──────────────────────
+   python test_flet.py        # Pruebas de Flet
+   python test_api.py         # Pruebas de API
