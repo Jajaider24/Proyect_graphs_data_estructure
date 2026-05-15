@@ -60,16 +60,14 @@ class NetworkPage:
                     expand=True,
                     on_change=self._on_search_airport
                 ),
-                ft.IconButton(
+                ft.Button(
                     icon="refresh",
                     on_click=self._on_refresh_data
                 )
             ], spacing=SIZES["PADDING"]),
             
             # Airports table
-            self._create_airports_table(),
-            
-            ft.Spacer()
+            self._create_airports_table()
         ], expand=True, spacing=SIZES["PADDING"], scroll=ft.ScrollMode.AUTO)
     
     def _create_stat_card(self, title: str, value: str) -> ft.Card:

@@ -32,18 +32,18 @@ class DashboardPage:
             
             # Quick actions
             ft.Row([
-                ft.ElevatedButton(
-                    text="Cargar Red de Aeropuertos",
+                ft.Button(
+                    content="Cargar Red de Aeropuertos",
                     icon="upload",
                     on_click=self._on_load_network
                 ),
-                ft.ElevatedButton(
-                    text="Generar Itinerario",
+                ft.Button(
+                    content="Generar Itinerario",
                     icon="route",
                     on_click=self._on_generate_itinerary
                 ),
-                ft.ElevatedButton(
-                    text="Estadísticas de Red",
+                ft.Button(
+                    content="Estadísticas de Red",
                     icon="analytics",
                     on_click=self._on_show_statistics
                 )
@@ -72,9 +72,7 @@ class DashboardPage:
                 self._create_info_card("Total de Rutas", "0", "route"),
                 self._create_info_card("Aeropuertos Hub", "0", "hub"),
                 self._create_info_card("Conectividad Promedio", "0", "signal_cellular_alt")
-            ], spacing=SIZES["PADDING"], wrap=True),
-            
-            ft.Spacer()
+            ], spacing=SIZES["PADDING"], wrap=True)
         ], expand=True, spacing=SIZES["PADDING"])
     
     def _create_status_card(self) -> ft.Card:
@@ -96,7 +94,7 @@ class DashboardPage:
             content=ft.Container(
                 content=ft.Column([
                     ft.Row([
-                        ft.Icon(name=icon, size=SIZES["ICON_SIZE"], color=COLORS["PRIMARY"])
+                        ft.Icon(icon, size=SIZES["ICON_SIZE"], color=COLORS["PRIMARY"])
                     ]),
                     ft.Text(title, size=SIZES["FONT_SIZE_SMALL"], color=COLORS["TEXT"]),
                     ft.Text(value, size=SIZES["FONT_SIZE_SUBTITLE"], weight=ft.FontWeight.BOLD)

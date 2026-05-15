@@ -80,13 +80,13 @@ class PlanningPage:
             
             # Action buttons
             ft.Row([
-                ft.ElevatedButton(
-                    text="Generar Itinerario",
-                    icon="route",
+                ft.Button(
+                    content="Generar Itinerario",
+                    icon="play_arrow",
                     on_click=self._on_generate_itinerary
                 ),
-                ft.TextButton(
-                    text="Limpiar",
+                ft.Button(
+                    content="Limpiar",
                     icon="clear",
                     on_click=self._on_clear_form
                 )
@@ -112,8 +112,7 @@ class PlanningPage:
                 padding=SIZES["PADDING"],
                 ref=ft.Ref()
             ),
-            
-            ft.Spacer()
+
         ], expand=True, spacing=SIZES["PADDING"], scroll=ft.ScrollMode.AUTO)
     
     def _on_generate_itinerary(self, e):

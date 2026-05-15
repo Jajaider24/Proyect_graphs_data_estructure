@@ -70,18 +70,18 @@ class RoutesPage:
             
             # Action buttons
             ft.Row([
-                ft.ElevatedButton(
-                    text="Buscar Ruta",
+                ft.Button(
+                    content="Buscar Ruta",
                     icon="search",
                     on_click=self._on_search_route
                 ),
-                ft.ElevatedButton(
-                    text="Comparar Rutas",
+                ft.Button(
+                    content="Comparar Rutas",
                     icon="compare_arrows",
                     on_click=self._on_compare_routes
                 ),
                 ft.TextButton(
-                    text="Limpiar",
+                    content="Limpiar",
                     icon="clear",
                     on_click=self._on_clear_search
                 )
@@ -107,8 +107,7 @@ class RoutesPage:
                 padding=SIZES["PADDING"],
                 ref=ft.Ref()
             ),
-            
-            ft.Spacer()
+
         ], expand=True, spacing=SIZES["PADDING"], scroll=ft.ScrollMode.AUTO)
     
     def _on_search_route(self, e):

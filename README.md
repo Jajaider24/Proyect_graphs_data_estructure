@@ -77,3 +77,34 @@ Correr el proyecto
    ──────────────────────
    python test_flet.py        # Pruebas de Flet
    python test_api.py         # Pruebas de API
+
+   ### Frontend (Flet)
+
+**Estructura de Páginas:**
+
+1. **Dashboard** (`dashboard_page.py`)
+   - Estado del sistema
+   - Botones de acciones rápidas
+   - Cargar red aérea
+
+2. **Red de Aeropuertos** (`network_page.py`)
+   - Tabla de aeropuertos
+   - Estadísticas de red
+   - Búsqueda de aeropuertos
+
+3. **Planificación de Viajes** (`planning_page.py`)
+   - Formulario de itinerario
+   - Origen, presupuesto, tiempo
+   - Tipo de aeronave
+
+4. **Búsqueda de Rutas** (`routes_page.py`)
+   - Búsqueda de ruta más corta
+   - Comparación de rutas
+   - Filtros de criterios
+
+5. **Configuración** (`settings_page.py`)
+   - URL del servidor
+   - Timeout de conexión
+   - Modo oscuro/claro
+
+---

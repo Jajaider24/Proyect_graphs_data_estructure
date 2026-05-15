@@ -57,13 +57,13 @@ class SettingsPage:
                         ], spacing=SIZES["PADDING"]),
                         
                         ft.Row([
-                            ft.ElevatedButton(
-                                text="Probar Conexión",
+                            ft.Button(
+                                content="Probar Conexión",
                                 icon="check",
                                 on_click=self._on_test_connection
                             ),
                             ft.TextButton(
-                                text="Restablecer",
+                                content="Restablecer",
                                 icon="refresh",
                                 on_click=self._on_reset_settings
                             )
@@ -138,8 +138,7 @@ class SettingsPage:
                     padding=SIZES["PADDING"]
                 )
             ),
-            
-            ft.Spacer()
+
         ], expand=True, spacing=SIZES["PADDING"], scroll=ft.ScrollMode.AUTO)
     
     def _on_test_connection(self, e):
