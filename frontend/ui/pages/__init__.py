@@ -1,0 +1,1 @@
+"""Frontend UI pages package."""
