@@ -121,6 +121,8 @@ def build_graph_from_json(data):
 
     # Create graph
     graph = Graph()
+    # Preserve network configuration (intervals, budget thresholds, aircraft defaults)
+    graph.config = data.get("configuracion", {})
 
     # -----------------------------------------
     # CREATE AIRPORTS
@@ -182,13 +184,17 @@ def build_graph_from_json(data):
 
     for route_data in data.get("rutas", []):
 
-        origin = graph.get_airport(
-            route_data["origen"]
-        )
-
-        destination = graph.get_airport(
-            route_data["destino"]
-        )
+        origen_id = route_data["origen"]
+        destino_id = route_data["destino"]
+        
+        origin = graph.get_airport(origen_id)
+        destination = graph.get_airport(destino_id)
+        
+        # Validate airports exist
+        if origin is None:
+            raise ValueError(f"Origin airport '{origen_id}' not found in graph")
+        if destination is None:
+            raise ValueError(f"Destination airport '{destino_id}' not found in graph")
 
         route = Route(
             origin=origin,

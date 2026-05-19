@@ -211,7 +211,9 @@ def print_job_summary(result):
 def simulate_airport_stay(
     airport,
     traveler,
-    activity_limit=2
+    activity_limit=2,
+    lodging_interval_hours: float = 20.0,
+    meal_interval_hours: float = 8.0,
 ):
     """
     Simulate traveler stay at an airport.
@@ -261,68 +263,57 @@ def simulate_airport_stay(
     }
 
     # -----------------------------------------
-    # ACCOMMODATION
+    # ACCOMMODATION (only if required by traveler state)
     # -----------------------------------------
 
-    lodging_cost = (
-        airport.costo_alojamiento
-    )
-
-    traveler.spend_money(
-        lodging_cost
-    )
-
-    summary["lodging_cost"] = (
-        lodging_cost
-    )
-
-    # Assume 1 hotel night = 8 hours
-    lodging_time = 480
-
-    traveler.consume_time(
-        lodging_time
-    )
-
-    summary["total_time"] += (
-        lodging_time
-    )
+    lodging_cost = 0
+    lodging_time = 0
+    if getattr(traveler, "hours_since_last_lodging", 0) >= lodging_interval_hours:
+        lodging_cost = getattr(airport, "costo_alojamiento", 0)
+        # Apply lodging
+        traveler.spend_money(lodging_cost)
+        summary["lodging_cost"] = lodging_cost
+        # Assume 1 hotel night = 8 hours -> 480 minutes
+        lodging_time = 480
+        traveler.consume_time(lodging_time)
+        # update hours counters
+        if hasattr(traveler, "hours_since_last_meal"):
+            traveler.hours_since_last_meal += lodging_time / 60.0
+        if hasattr(traveler, "hours_since_last_lodging"):
+            traveler.hours_since_last_lodging += lodging_time / 60.0
+        summary["total_time"] += lodging_time
+        # reset lodging counter
+        if hasattr(traveler, "hours_since_last_lodging"):
+            traveler.hours_since_last_lodging = 0
 
     # -----------------------------------------
-    # FOOD
+    # FOOD (only if required by traveler state)
     # -----------------------------------------
 
-    food_cost = (
-        airport.costo_alimentacion
-    )
-
-    traveler.spend_money(
-        food_cost
-    )
-
-    summary["food_cost"] = (
-        food_cost
-    )
-
-    # Assume meals consume 1 hour
-    food_time = 60
-
-    traveler.consume_time(
-        food_time
-    )
-
-    summary["total_time"] += (
-        food_time
-    )
+    food_cost = 0
+    food_time = 0
+    if getattr(traveler, "hours_since_last_meal", 0) >= meal_interval_hours:
+        food_cost = getattr(airport, "costo_alimentacion", 0)
+        traveler.spend_money(food_cost)
+        summary["food_cost"] = food_cost
+        # Assume meals consume 1 hour -> 60 minutes
+        food_time = 60
+        traveler.consume_time(food_time)
+        # update hours counters
+        if hasattr(traveler, "hours_since_last_meal"):
+            traveler.hours_since_last_meal += food_time / 60.0
+        if hasattr(traveler, "hours_since_last_lodging"):
+            traveler.hours_since_last_lodging += food_time / 60.0
+        summary["total_time"] += food_time
+        # reset meal counter
+        if hasattr(traveler, "hours_since_last_meal"):
+            traveler.hours_since_last_meal = 0
 
     # -----------------------------------------
     # ACTIVITIES
     # -----------------------------------------
 
-    selected_activities = (
-        airport.actividades[
-            :activity_limit
-        ]
-    )
+    selected_activities = (airport.actividades[:activity_limit])
 
     for activity in (
         selected_activities
@@ -353,9 +344,12 @@ def simulate_airport_stay(
             activity_cost
         )
 
-        traveler.consume_time(
-            activity_time
-        )
+        traveler.consume_time(activity_time)
+        # update hours counters
+        if hasattr(traveler, "hours_since_last_meal"):
+            traveler.hours_since_last_meal += activity_time / 60.0
+        if hasattr(traveler, "hours_since_last_lodging"):
+            traveler.hours_since_last_lodging += activity_time / 60.0
 
         traveler.activities_done.append({
 

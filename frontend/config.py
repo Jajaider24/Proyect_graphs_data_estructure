@@ -45,6 +45,7 @@ SIZES = {
 NAV_ITEMS = [
     {"label": "Dashboard", "icon": "dashboard", "value": "dashboard"},
     {"label": "Red de Aeropuertos", "icon": "language", "value": "network"},
+    {"label": "Mapa de Red", "icon": "account_tree", "value": "network_graph"},
     {"label": "Planificación", "icon": "route", "value": "planning"},
     {"label": "Rutas", "icon": "directions_run", "value": "routes"},
     {"label": "Configuración", "icon": "settings", "value": "settings"}

@@ -9,12 +9,11 @@ Endpoints for simulation services:
 
 from fastapi import APIRouter, HTTPException
 from api.schemas import SimulationRequest
-from src.services.graph_service import GraphService
+from src.services.graph_service import graph_service
 from src.services.simulation_service import SimulationService
 
 router = APIRouter()
 
-graph_service = GraphService()
 simulation_service = SimulationService()
 
 

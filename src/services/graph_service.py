@@ -71,3 +71,7 @@ class GraphService:
         """
 
         return self.graph
+
+
+# Module-level shared GraphService instance for API usage
+graph_service = GraphService()

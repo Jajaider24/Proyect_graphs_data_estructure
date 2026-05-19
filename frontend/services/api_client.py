@@ -3,7 +3,6 @@ HTTP client for communicating with FastAPI backend.
 """
 
 import httpx
-import asyncio
 from typing import Dict, Any, Optional, List
 from frontend.config import API_CONFIG
 
@@ -30,6 +29,7 @@ class APIClient:
         """Close HTTP client."""
         if self.client:
             await self.client.aclose()
+            self.client = None
     
     async def get(self, endpoint: str, **kwargs) -> Dict[str, Any]:
         """Make GET request."""
@@ -41,13 +41,20 @@ class APIClient:
         except Exception as e:
             raise Exception(f"GET {endpoint} failed: {str(e)}")
     
-    async def post(self, endpoint: str, data: Dict[str, Any] = None, **kwargs) -> Dict[str, Any]:
+    async def post(
+        self,
+        endpoint: str,
+        data: Dict[str, Any] = None,
+        params: Dict[str, Any] = None,
+        **kwargs
+    ) -> Dict[str, Any]:
         """Make POST request."""
         try:
             client = await self._get_client()
             response = await client.post(
                 f"/api{endpoint}",
                 json=data,
+                params=params,
                 **kwargs
             )
             response.raise_for_status()
@@ -58,7 +65,7 @@ class APIClient:
     # Graph endpoints
     async def load_graph(self, network_file: str = "../data/sample_network.json") -> Dict[str, Any]:
         """Load graph from network file."""
-        return await self.post("/graph/load", {"network_file": network_file})
+        return await self.post("/graph/load", params={"network_file": network_file})
     
     async def get_graph_data(self) -> Dict[str, Any]:
         """Get current graph data."""
@@ -82,38 +89,64 @@ class APIClient:
         origin: str,
         budget: float,
         available_time: float,
-        aircraft_type: str = "Commercial"
+        preferred_transports: List[str] = None,
+        include_secondary_airports: bool = True,
     ) -> Dict[str, Any]:
         """Generate travel itinerary."""
+        payload = {
+            "origin": origin,
+            "budget": budget,
+            "available_time": available_time,
+            "preferred_transports": preferred_transports or [],
+            "include_secondary_airports": include_secondary_airports,
+        }
         return await self.post(
             "/planning/itinerary",
-            {
-                "origin": origin,
-                "budget": budget,
-                "available_time": available_time,
-                "aircraft_type": aircraft_type
-            }
+            payload,
         )
     
     async def calculate_shortest_path(
         self,
         start: str,
         end: str,
-        criterion: str = "distance"
+        criterion: str = "distance",
+        criteria: List[str] = None,
+        include_secondary_airports: bool = True,
+        transport_types: List[str] = None,
     ) -> Dict[str, Any]:
         """Calculate shortest path between airports."""
+        payload = {
+            "start": start,
+            "end": end,
+            "criterion": criterion,
+            "criteria": criteria or [],
+            "include_secondary_airports": include_secondary_airports,
+            "transport_types": transport_types or [],
+        }
         return await self.post(
             "/planning/shortest-path",
-            {
-                "start": start,
-                "end": end,
-                "criterion": criterion
-            }
+            payload,
         )
     
-    async def compare_routes(self, start: str, end: str) -> Dict[str, Any]:
+    async def compare_routes(
+        self,
+        start: str,
+        end: str,
+        criteria: List[str] = None,
+        include_secondary_airports: bool = True,
+        transport_types: List[str] = None,
+    ) -> Dict[str, Any]:
         """Compare routes by different criteria."""
-        return await self.post("/planning/compare-routes", {"start": start, "end": end})
+        return await self.post(
+            "/planning/compare-routes",
+            params={
+                "start": start,
+                "end": end,
+                "criteria": ",".join(criteria or ["distance", "cost", "time"]),
+                "include_secondary_airports": str(include_secondary_airports).lower(),
+                "transport_types": ",".join(transport_types or []),
+            },
+        )
     
     # Network endpoints
     async def get_network_statistics(self) -> Dict[str, Any]:
@@ -140,6 +173,55 @@ class APIClient:
     async def get_scenarios(self) -> Dict[str, Any]:
         """Get available scenarios."""
         return await self.get("/simulation/scenarios")
+
+    # Interactive planning session endpoints
+    async def create_session(
+        self,
+        origin: str,
+        initial_budget: float,
+        available_time_hours: float,
+        preferred_transports: List[str] = None,
+        include_secondary_airports: bool = True,
+    ) -> Dict[str, Any]:
+        payload = {
+            "origin": origin,
+            "initial_budget": initial_budget,
+            "available_time_hours": available_time_hours,
+            "preferred_transports": preferred_transports or [],
+            "include_secondary_airports": include_secondary_airports,
+        }
+        return await self.post("/planning/session", payload)
+
+    async def get_session_options(self, session_id: str) -> Dict[str, Any]:
+        return await self.get(f"/planning/session/{session_id}/options")
+
+    async def post_session_decision(self, session_id: str, decision: Dict[str, Any]) -> Dict[str, Any]:
+        return await self.post(f"/planning/session/{session_id}/decision", decision)
+
+    async def get_session_state(self, session_id: str) -> Dict[str, Any]:
+        return await self.get(f"/planning/session/{session_id}/state")
+
+    async def advance_session_transit(self, session_id: str, minutes: int) -> Dict[str, Any]:
+        decision = {"type": "advance", "advance_minutes": minutes}
+        return await self.post_session_decision(session_id, decision)
+
+    async def interrupt_route(
+        self,
+        origin_id: str,
+        destination_id: str,
+        session_id: Optional[str] = None,
+        reason: str = "Interrupcion operativa",
+    ) -> Dict[str, Any]:
+        payload = {
+            "origin_id": origin_id,
+            "destination_id": destination_id,
+            "session_id": session_id,
+            "reason": reason,
+        }
+        return await self.post("/planning/session/interrupt-route", payload)
+
+    async def get_session_report(self, session_id: str) -> Dict[str, Any]:
+        return await self.get(f"/planning/session/{session_id}/report")
 
 
 # Global API client instance

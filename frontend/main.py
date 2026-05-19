@@ -38,4 +38,4 @@ def main(page: ft.Page):
 
 
 if __name__ == "__main__":
-    ft.app(target=main, assets_dir="frontend/assets")
+    ft.run(main, assets_dir="frontend/assets")

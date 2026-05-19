@@ -2,9 +2,11 @@
 Main window UI for SkyRoute Planner.
 """
 
+import asyncio
 import flet as ft
 from frontend.config import COLORS, SIZES, NAV_ITEMS
 from frontend.ui.pages.dashboard_page import DashboardPage
+from frontend.ui.pages.graph_page import GraphPage
 from frontend.ui.pages.network_page import NetworkPage
 from frontend.ui.pages.planning_page import PlanningPage
 from frontend.ui.pages.routes_page import RoutesPage
@@ -28,6 +30,7 @@ class MainWindow:
         self.pages = {
             "dashboard": DashboardPage(self),
             "network": NetworkPage(self),
+            "network_graph": GraphPage(self),
             "planning": PlanningPage(self),
             "routes": RoutesPage(self),
             "settings": SettingsPage(self)
@@ -54,19 +57,27 @@ class MainWindow:
         
         # Add to page
         self.page.add(main_layout)
+        self._schedule_page_load("dashboard")
     
     def _create_navigation_rail(self) -> ft.NavigationRail:
         """Create navigation rail."""
-        destinations = []
-        
-        for item in NAV_ITEMS:
-            destinations.append(
-                ft.NavigationRailDestination(
-                    icon=item["icon"],
-                    label=item["label"],
-                    selected_icon=item["icon"]
-                )
+        icon_map = {
+            "dashboard": ft.Icons.DASHBOARD,
+            "language": ft.Icons.LANGUAGE,
+            "account_tree": ft.Icons.ACCOUNT_TREE,
+            "route": ft.Icons.ROUTE,
+            "directions_run": ft.Icons.DIRECTIONS_RUN,
+            "settings": ft.Icons.SETTINGS,
+        }
+
+        destinations = [
+            ft.NavigationRailDestination(
+                icon=icon_map.get(item["value"], ft.Icons.CIRCLE_OUTLINED),
+                selected_icon=icon_map.get(item["value"], ft.Icons.CIRCLE),
+                label=item["label"]
             )
+            for item in NAV_ITEMS
+        ]
         
         nav_rail = ft.NavigationRail(
             destinations=destinations,
@@ -74,6 +85,7 @@ class MainWindow:
             width=200,
             bgcolor=COLORS["PRIMARY"],
             label_type=ft.NavigationRailLabelType.ALL,
+            extended=True,
             selected_index=0
         )
         
@@ -95,6 +107,22 @@ class MainWindow:
         # Update content area
         self.content_area.content = self.pages[page_key].build()
         self.page.update()
+        self._schedule_page_load(page_key)
+
+    def _schedule_page_load(self, page_key: str):
+        """Schedule an async refresh for pages that expose load_data."""
+        page_obj = self.pages.get(page_key)
+        load_method = getattr(page_obj, "load_data", None)
+
+        if not callable(load_method):
+            return
+
+        try:
+            self.page.run_task(load_method)
+        except AttributeError:
+            asyncio.create_task(load_method())
+        except RuntimeError:
+            asyncio.create_task(load_method())
     
     def show_error(self, message: str):
         """Show error message."""
