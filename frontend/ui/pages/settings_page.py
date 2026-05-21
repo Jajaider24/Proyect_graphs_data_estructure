@@ -138,16 +138,32 @@ class SettingsPage:
             ft.Card(
                 content=ft.Container(
                     content=ft.Column([
-                        ft.Text("SkyRoute Planner v1.0.0", weight=ft.FontWeight.BOLD),
-                        ft.Text("Sistema de Planificación de Rutas Aéreas", size=SIZES["FONT_SIZE_SMALL"]),
-                        ft.Text("© 2024 - Proyecto de Estructuras de Datos", size=SIZES["FONT_SIZE_SMALL"]),
+                        ft.Row([
+                            ft.Icon(ft.Icons.FLIGHT, size=32, color=COLORS["PRIMARY"])
+                        ]),
+                        ft.Text("SkyRoute Planner", size=SIZES["FONT_SIZE_TITLE"], weight=ft.FontWeight.BOLD, color=COLORS["PRIMARY"]),
+                        ft.Text("v1.0.0", size=SIZES["FONT_SIZE_SMALL"], color=COLORS["SECONDARY"]),
+                        ft.Divider(),
+                        ft.Text("Sistema de Planificación de Rutas Aéreas con Grafos", size=SIZES["FONT_SIZE_BODY"], weight=ft.FontWeight.BOLD),
+                        ft.Text(""),
+                        ft.Text("Desarrollado por:", weight=ft.FontWeight.BOLD),
+                        ft.Text("• Jaider León", size=SIZES["FONT_SIZE_BODY"]),
+                        ft.Text("• Michael Ramirez", size=SIZES["FONT_SIZE_BODY"]),
+                        ft.Text("• Jhoan Sebastian Velez", size=SIZES["FONT_SIZE_BODY"]),
+                        ft.Text(""),
+                        ft.Text("© 2026 - Proyecto de Estructuras de Datos", size=SIZES["FONT_SIZE_SMALL"], color=COLORS["DARK"], weight=ft.FontWeight.BOLD),
+                        ft.Text(""),
+                        ft.Text("Utiliza tecnologías modernas:", weight=ft.FontWeight.BOLD),
+                        ft.Text("• Backend: FastAPI + Python", size=SIZES["FONT_SIZE_SMALL"]),
+                        ft.Text("• Frontend: Flet (UI multiplataforma)", size=SIZES["FONT_SIZE_SMALL"]),
+                        ft.Text("• Algoritmos: Dijkstra, DFS, Grafos", size=SIZES["FONT_SIZE_SMALL"]),
                         ft.Text(""),
                         ft.Row([
-                            ft.TextButton("GitHub", on_click=self._on_github),
-                            ft.TextButton("Documentación", on_click=self._on_documentation),
-                            ft.TextButton("Contacto", on_click=self._on_contact)
-                        ])
-                    ], spacing=SIZES["PADDING"]),
+                            ft.TextButton("GitHub", on_click=self._on_github, icon=ft.Icons.CODE),
+                            ft.TextButton("Documentación", on_click=self._on_documentation, icon=ft.Icons.HELP),
+                            ft.TextButton("Contacto", on_click=self._on_contact, icon=ft.Icons.EMAIL)
+                        ], spacing=SIZES["PADDING"])
+                    ], spacing=8),
                     padding=SIZES["PADDING"]
                 )
             ),
@@ -202,15 +218,15 @@ class SettingsPage:
     
     def _on_github(self, e):
         """Handle GitHub button click."""
-        self._open_external_url("https://github.com/")
+        self._open_external_url("https://github.com/JaiderLeon/SkyRoute-Planner")
     
     def _on_documentation(self, e):
         """Handle documentation button click."""
-        self._open_external_url("https://fastapi.tiangolo.com/")
+        self._open_external_url("https://github.com/JaiderLeon/SkyRoute-Planner/wiki")
     
     def _on_contact(self, e):
         """Handle contact button click."""
-        self._open_external_url("mailto:soporte@skyroute.local")
+        self._open_external_url("mailto:info@skyroute.local")
 
     def _open_external_url(self, url: str):
         """Open an external URL using the page launcher if available."""

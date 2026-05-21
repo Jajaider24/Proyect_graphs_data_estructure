@@ -3,11 +3,12 @@ Frontend configuration and constants.
 """
 
 APP_CONFIG = {
-    "APP_TITLE": "SkyRoute Planner",
+    "APP_TITLE": "SkyRoute Planner - Sistema de Planificación de Rutas Aéreas",
     "VERSION": "1.0.0",
     "WINDOW_WIDTH": 1200,
     "WINDOW_HEIGHT": 800,
-    "DEBUG": True
+    "DEBUG": False,  # Set to False for production
+    "YEAR": 2026
 }
 
 API_CONFIG = {
@@ -16,18 +17,19 @@ API_CONFIG = {
     "TIMEOUT": 30
 }
 
-# UI Theme colors
+# UI Theme colors - Professional Aviation Theme
 COLORS = {
-    "PRIMARY": "#0066CC",
-    "SECONDARY": "#00A4EF",
-    "SUCCESS": "#28A745",
-    "WARNING": "#FFC107",
-    "DANGER": "#DC3545",
-    "LIGHT": "#F8F9FA",
-    "DARK": "#343A40",
-    "TEXT": "#212529",
-    "BORDER": "#DDD",
-    "BACKGROUND": "#FFFFFF"
+    "PRIMARY": "#0066CC",        # Professional Blue
+    "SECONDARY": "#00A4EF",      # Sky Blue
+    "SUCCESS": "#28A745",        # Green
+    "WARNING": "#FFC107",        # Amber/Gold
+    "DANGER": "#DC3545",         # Red
+    "LIGHT": "#F8F9FA",          # Light Gray
+    "DARK": "#343A40",           # Dark Gray
+    "TEXT": "#212529",           # Charcoal
+    "BORDER": "#DDD",            # Border Gray
+    "BACKGROUND": "#FFFFFF",     # White
+    "ACCENT": "#FF6B6B"          # Accent Red
 }
 
 # UI Sizes
@@ -41,7 +43,7 @@ SIZES = {
     "FONT_SIZE_SMALL": 12
 }
 
-# Navigation
+# Navigation - Ordenado lógicamente
 NAV_ITEMS = [
     {"label": "Dashboard", "icon": "dashboard", "value": "dashboard"},
     {"label": "Red de Aeropuertos", "icon": "language", "value": "network"},
