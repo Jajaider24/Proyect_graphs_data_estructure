@@ -57,7 +57,8 @@ class MainWindow:
         
         # Add to page
         self.page.add(main_layout)
-        self._schedule_page_load("dashboard")
+        # No auto-load data - user must click "Cargar Red" button
+        # self._schedule_page_load("dashboard")
     
     def _create_navigation_rail(self) -> ft.NavigationRail:
         """Create navigation rail."""
