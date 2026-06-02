@@ -4,23 +4,18 @@ Airport module - Airport domain model.
 Represents airports as graph nodes in the airline network.
 """
 
-from src.core.base_graph import Vertice
 
-
-class Airport(Vertice):
+class Airport:
     """
     Represents an airport node in the graph.
 
-    This class extends the academic Vertice structure
-    provided in class and adds domain-specific data
-    required by the airline simulation project.
+    The class keeps only the interface that the graph algorithms need:
+        - id
+        - visitado
+        - adjacency list helpers
 
-    Each airport stores:
-        - Metadata
-        - Costs
-        - Activities
-        - Jobs
-        - Route adjacency list
+    Domain-specific data such as metadata, costs, activities and jobs
+    live here instead of in the academic graph vertex base class.
     """
 
     def __init__(self, iata_code):
@@ -32,15 +27,10 @@ class Airport(Vertice):
                 Airport IATA code.
         """
 
-        # Initialize academic graph vertex structure
-        super().__init__(iata_code)
-
-        # Unique airport identifier
+        # Graph-compatible identity and traversal state.
         self.id = iata_code
-
-        # Project adjacency list.
-        # Stores Route objects.
-        self.routes = []
+        self.adyacencias = []
+        self.visitado = False
 
         # Airport metadata
         self.nombre = ""
@@ -58,6 +48,26 @@ class Airport(Vertice):
         # Dynamic simulation data
         self.actividades = []
         self.trabajos = []
+
+    def agregar_adyacencia(self, arista):
+        """Add a route to the airport adjacency list."""
+
+        self.adyacencias.append(arista)
+
+    def obtener_adyacencias(self):
+        """Return the airport adjacency list."""
+
+        return self.adyacencias
+
+    @property
+    def routes(self):
+        """Compatibility alias for the adjacency list."""
+
+        return self.adyacencias
+
+    @routes.setter
+    def routes(self, value):
+        self.adyacencias = list(value)
 
     def __str__(self):
         """

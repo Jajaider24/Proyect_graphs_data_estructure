@@ -311,11 +311,22 @@ class GraphPage:
             # click handler
             def make_onclick(_aid):
                 def _on_click(e):
+                    # schedule coroutine properly via page.run_task
                     try:
-                        self.page.run_task(self._load_airport_details(_aid))
+                        # pass a callable that returns the coroutine to allow Flet to schedule it
+                        self.page.run_task(lambda: self._load_airport_details(_aid))
                     except Exception:
+                        # fallback: try to schedule on the running loop, or run synchronously
                         import asyncio
-                        asyncio.create_task(self._load_airport_details(_aid))
+                        try:
+                            loop = asyncio.get_event_loop()
+                            if loop.is_running():
+                                loop.create_task(self._load_airport_details(_aid))
+                            else:
+                                asyncio.run(self._load_airport_details(_aid))
+                        except RuntimeError:
+                            # cannot schedule task here; give up silently
+                            pass
                 return _on_click
 
             node.on_click = make_onclick(aid)

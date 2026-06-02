@@ -187,71 +187,6 @@ class DashboardPage:
             ink=True
         )
     
-    async def load_data(self):
-        """Load dashboard data from the backend."""
-        if not self.status_text:
-            return
-
-        try:
-            status = await api_client.get_graph_status()
-            
-            if not status.get("loaded"):
-                self.status_text.value = "No cargada"
-                self.status_title.value = "Red no cargada"
-                self.status_info.value = "Haz clic en 'Cargar Red' para comenzar"
-                self.status_info.color = COLORS["TEXT"]
-                self.status_icon.name = ft.Icons.CLOUD_OFF
-                self.status_icon.color = COLORS["DANGER"]
-                self.status_text.color = COLORS["DANGER"]
-                self.status_title.color = COLORS["DARK"]
-                
-                self._set_metric("Aeropuertos", 0)
-                self._set_metric("Rutas", 0)
-                self._set_metric("Hubs", 0)
-                self._set_metric("Conectividad", "0%")
-                self.main_window.page.update()
-                return
-
-            stats = await api_client.get_network_statistics()
-            graph_data = await api_client.get_graph_data()
-
-            airports = graph_data.get("total_airports", 0) if graph_data else 0
-            routes = graph_data.get("total_routes", 0) if graph_data else 0
-
-            self.status_text.value = "✓ Cargada"
-            self.status_title.value = "✓ Red cargada exitosamente"
-            self.status_info.value = f"✈ Aeropuertos: {airports} | 🛫 Rutas: {routes}"
-            self.status_info.color = COLORS["SUCCESS"]
-            self.status_icon.name = ft.Icons.CLOUD_DONE
-            self.status_icon.color = COLORS["SUCCESS"]
-            self.status_text.color = COLORS["SUCCESS"]
-            self.status_title.color = COLORS["SUCCESS"]
-
-            hubs = stats.get("hub_airports", 0)
-            connectivity = stats.get("average_connections", 0)
-            
-            self._set_metric("Aeropuertos", airports)
-            self._set_metric("Rutas", routes)
-            self._set_metric("Hubs", hubs)
-            self._set_metric("Conectividad", f"{connectivity:.1f}%")
-            
-        except Exception as exc:
-            self.status_text.value = "Error"
-            self.status_title.value = "⚠ Error al cargar"
-            self.status_info.value = "Verifica la conexión e intenta de nuevo"
-            self.status_info.color = COLORS["DANGER"]
-            self.status_icon.name = ft.Icons.ERROR
-            self.status_icon.color = COLORS["DANGER"]
-            self.status_text.color = COLORS["DANGER"]
-            self.status_title.color = COLORS["DANGER"]
-            
-            self._set_metric("Aeropuertos", "—")
-            self._set_metric("Rutas", "—")
-            self._set_metric("Hubs", "—")
-            self._set_metric("Conectividad", "—")
-
-        self.main_window.page.update()
-
     def _set_metric(self, title: str, value):
         """Update metric value."""
         metric = self.metric_values.get(title)
@@ -291,67 +226,106 @@ class DashboardPage:
         """Handle show statistics button click."""
         self.main_window.switch_page("network")
     
+    def _on_load_network(self, e):
+        """Load the default sample network from the backend."""
+        self.main_window.page.run_task(lambda: self._on_load_network_async("../data/sample_network.json"))
+
+    def _show_file_picker(self, path_field: ft.TextField):
+        """Open a FilePicker and put selected relative path into the text field."""
+        file_picker = ft.FilePicker(on_result=lambda ev: self._on_file_picker_result(ev, path_field))
+        self.main_window.page.overlay.append(file_picker)
+        file_picker.pick_files()
+
+    def _on_file_picker_result(self, ev, path_field: ft.TextField):
+        if ev.files and len(ev.files) > 0:
+            # Use project-relative path if the file is inside the workspace, otherwise set absolute path
+            picked = ev.files[0]
+            path_field.value = picked.path
+            # save last used path
+            try:
+                self._save_last_network_path(picked.path)
+            except Exception:
+                pass
+            self.main_window.page.update()
+
+    def _save_last_network_path(self, path: str):
+        import json, os
+        settings_file = os.path.join(os.path.dirname(__file__), '..', '..', '.last_network.json')
+        settings_file = os.path.normpath(settings_file)
+        data = {"last_network": path}
+        with open(settings_file, 'w', encoding='utf-8') as f:
+            json.dump(data, f)
+
+    def _load_last_network_path(self) -> str:
+        import json, os
+        settings_file = os.path.join(os.path.dirname(__file__), '..', '..', '.last_network.json')
+        settings_file = os.path.normpath(settings_file)
+        try:
+            if os.path.exists(settings_file):
+                with open(settings_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    return data.get('last_network', '')
+        except Exception:
+            return ''
+        return ''
+
+    async def _on_load_network_async(self, network_file: str = "../data/sample_network.json"):
+        """Async implementation: call API to load the sample network and refresh pages."""
+        try:
+            result = await api_client.load_graph(network_file)
+            await self.load_data()
+
+            # Refresh other pages if they exist
+            network_page = self.main_window.pages.get("network")
+            if network_page and hasattr(network_page, "load_data"):
+                await network_page.load_data()
+
+            graph_page = self.main_window.pages.get("network_graph")
+            if graph_page and hasattr(graph_page, "load_data"):
+                try:
+                    await graph_page.load_data()
+                except Exception:
+                    pass
+
+            self.main_window.show_success(result.get("message", "Red de aeropuertos cargada exitosamente"))
+        except Exception as exc:
+            self.main_window.show_error(f"No se pudo cargar la red: {exc}")
+
+    async def _on_upload_and_load(self, file_path: str):
+        """Upload the selected file to the backend and load it."""
+        try:
+            result = await api_client.upload_graph(file_path)
+            # save last used path
+            try:
+                self._save_last_network_path(file_path)
+            except Exception:
+                pass
+            await self.load_data()
+            network_page = self.main_window.pages.get("network")
+            if network_page and hasattr(network_page, "load_data"):
+                await network_page.load_data()
+            graph_page = self.main_window.pages.get("network_graph")
+            if graph_page and hasattr(graph_page, "load_data"):
+                try:
+                    await graph_page.load_data()
+                except Exception:
+                    pass
+            self.main_window.show_success(result.get("message", "Red cargada exitosamente"))
+        except Exception as exc:
+            self.main_window.show_error(f"No se pudo subir/cargar la red: {exc}")
+
+    def _on_generate_itinerary(self, e):
+        """Handle generate itinerary button click."""
+        self.main_window.switch_page("planning")
+
+    def _on_show_statistics(self, e):
+        """Handle show statistics button click."""
+        self.main_window.switch_page("network")
+
     def _on_show_graph(self, e):
         """Handle show graph button click."""
         self.main_window.switch_page("network_graph")
-    
-    async def load_data(self):
-        """Load dashboard data from the backend."""
-        if not self.status_text:
-            return
-
-        try:
-            status = await api_client.get_graph_status()
-            
-            if not status.get("loaded"):
-                # Network not loaded
-                self.status_text.value = "Red no cargada"
-                self.status_icon.name = ft.Icons.CLOUD_OFF
-                self.status_icon.color = COLORS["DANGER"]
-                self.status_text.color = COLORS["DANGER"]
-                
-                self._set_metric("Total de Aeropuertos", 0)
-                self._set_metric("Total de Rutas", 0)
-                self._set_metric("Aeropuertos Hub", 0)
-                self._set_metric("Conectividad Promedio", "0%")
-                self.main_window.page.update()
-                return
-
-            # Network loaded - fetch additional data
-            stats = await api_client.get_network_statistics()
-            graph_data = await api_client.get_graph_data()
-
-            # Update status to loaded
-            self.status_text.value = "✓ Red cargada correctamente"
-            self.status_icon.name = ft.Icons.CLOUD_DONE
-            self.status_icon.color = COLORS["SUCCESS"]
-            self.status_text.color = COLORS["SUCCESS"]
-
-            # Extract metrics
-            airports = graph_data.get("total_airports", 0) if graph_data else 0
-            routes = graph_data.get("total_routes", 0) if graph_data else 0
-            hubs = stats.get("hub_airports", 0)
-            connectivity = stats.get("average_connections", 0)
-            
-            # Update metric cards
-            self._set_metric("Total de Aeropuertos", airports)
-            self._set_metric("Total de Rutas", routes)
-            self._set_metric("Aeropuertos Hub", hubs)
-            self._set_metric("Conectividad Promedio", f"{connectivity:.1f}%")
-            
-        except Exception as exc:
-            # Error loading data
-            self.status_text.value = "⚠ Error al cargar la red"
-            self.status_icon.name = ft.Icons.ERROR
-            self.status_icon.color = COLORS["DANGER"]
-            self.status_text.color = COLORS["DANGER"]
-            
-            self._set_metric("Total de Aeropuertos", "—")
-            self._set_metric("Total de Rutas", "—")
-            self._set_metric("Aeropuertos Hub", "—")
-            self._set_metric("Conectividad Promedio", "—")
-
-        self.main_window.page.update()
+        
 
     def _set_metric(self, title: str, value):
         """Update a dashboard metric value."""
@@ -398,40 +372,66 @@ class DashboardPage:
         self.main_window.switch_page("network_graph")
     
     async def load_data(self):
-        """Load dashboard data from the backend."""
+        """Load dashboard data from the backend and update UI metrics."""
         if not self.status_text:
             return
 
         try:
             status = await api_client.get_graph_status()
+
             if not status.get("loaded"):
-                self.status_text.value = "Estado: No cargado | Aeropuertos: 0 | Rutas: 0"
-                self._set_metric("Total de Aeropuertos", 0)
-                self._set_metric("Total de Rutas", 0)
-                self._set_metric("Aeropuertos Hub", 0)
-                self._set_metric("Conectividad Promedio", 0)
+                self.status_text.value = "No cargada"
+                self.status_title.value = "Red no cargada"
+                self.status_info.value = "Haz clic en 'Cargar Red' para comenzar"
+                self.status_info.color = COLORS["TEXT"]
+                self.status_icon.name = ft.Icons.CLOUD_OFF
+                self.status_icon.color = COLORS["DANGER"]
+                self.status_text.color = COLORS["DANGER"]
+                self.status_title.color = COLORS["DARK"]
+
+                self._set_metric("Aeropuertos", 0)
+                self._set_metric("Rutas", 0)
+                self._set_metric("Hubs", 0)
+                self._set_metric("Conectividad", "0%")
                 self.main_window.page.update()
                 return
 
             stats = await api_client.get_network_statistics()
             graph_data = await api_client.get_graph_data()
 
-            self.status_text.value = (
-                f"Estado: {'Cargado' if status.get('loaded') else 'No cargado'}"
-                f" | Aeropuertos: {status.get('airports_count', 0)}"
-                f" | Rutas: {status.get('routes_count', 0)}"
-            )
+            airports = graph_data.get("total_airports", 0) if graph_data else 0
+            routes = graph_data.get("total_routes", 0) if graph_data else 0
 
-            self._set_metric("Total de Aeropuertos", graph_data.get("total_airports", 0) if graph_data else 0)
-            self._set_metric("Total de Rutas", graph_data.get("total_routes", 0) if graph_data else 0)
-            self._set_metric("Aeropuertos Hub", stats.get("hub_airports", 0))
-            self._set_metric("Conectividad Promedio", stats.get("average_connections", 0))
+            self.status_text.value = "✓ Cargada"
+            self.status_title.value = "✓ Red cargada exitosamente"
+            self.status_info.value = f"✈ Aeropuertos: {airports} | 🛫 Rutas: {routes}"
+            self.status_info.color = COLORS["SUCCESS"]
+            self.status_icon.name = ft.Icons.CLOUD_DONE
+            self.status_icon.color = COLORS["SUCCESS"]
+            self.status_text.color = COLORS["SUCCESS"]
+            self.status_title.color = COLORS["SUCCESS"]
+
+            hubs = stats.get("hub_airports", 0)
+            connectivity = stats.get("average_connections", 0)
+
+            self._set_metric("Aeropuertos", airports)
+            self._set_metric("Rutas", routes)
+            self._set_metric("Hubs", hubs)
+            self._set_metric("Conectividad", f"{connectivity:.1f}%")
+
         except Exception as exc:
-            self.status_text.value = f"No fue posible cargar el estado: {exc}"
-            self._set_metric("Total de Aeropuertos", 0)
-            self._set_metric("Total de Rutas", 0)
-            self._set_metric("Aeropuertos Hub", 0)
-            self._set_metric("Conectividad Promedio", 0)
+            self.status_text.value = "Error"
+            self.status_title.value = "⚠ Error al cargar"
+            self.status_info.value = "Verifica la conexión e intenta de nuevo"
+            self.status_info.color = COLORS["DANGER"]
+            self.status_icon.name = ft.Icons.ERROR
+            self.status_icon.color = COLORS["DANGER"]
+            self.status_text.color = COLORS["DANGER"]
+
+            self._set_metric("Aeropuertos", 0)
+            self._set_metric("Rutas", 0)
+            self._set_metric("Hubs", 0)
+            self._set_metric("Conectividad", 0)
 
         self.main_window.page.update()
 

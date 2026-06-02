@@ -190,6 +190,23 @@ class RoutesPage:
                 continue
 
             path = payload.get("path", []) if isinstance(payload, dict) else []
+
+            # ----------------------------------------
+            # Visualizar primera ruta encontrada
+            # ----------------------------------------
+
+            if path:
+                    try:
+                        graph_page = self.main_window.pages["network_graph"]
+
+                        graph_page.visualize_path(path)
+
+                        self.main_window.current_page = "network_graph"
+                        self.main_window.refresh_content()
+                        
+                    except Exception as exc:
+                        print(f"Graph visualization error: {exc}")
+
             controls.append(
                 ft.Card(
                     content=ft.Container(

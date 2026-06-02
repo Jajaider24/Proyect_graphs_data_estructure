@@ -42,8 +42,8 @@ class Graph(Grafo):
         # Initialize academic graph structure
         super().__init__()
 
-        # Fast airport lookup
-        self.airports = {}
+        # Fast airport lookup uses the same storage as the academic graph.
+        self.airports = self.vertices
 
     def add_airport(self, airport):
         """
@@ -54,10 +54,6 @@ class Graph(Grafo):
                 Airport object.
         """
 
-        # Add to project registry
-        self.airports[airport.id] = airport
-
-        # Add to academic graph structure
         self.agregar_vertice(airport)
 
     def add_route(self, route):
@@ -73,10 +69,7 @@ class Graph(Grafo):
                 Route object.
         """
 
-        # Project adjacency list
-        route.origin.routes.append(route)
-
-        # Academic adjacency list
+        # Airport.routes is now an alias to the inherited adjacency list.
         route.origin.agregar_adyacencia(route)
 
     def get_airport(self, airport_id):

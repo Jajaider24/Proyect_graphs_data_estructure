@@ -147,9 +147,6 @@ class Route(Arista):
         # Distance metric
         self.distance_km = distance_km
 
-        # Academic weight compatibility
-        self.peso = distance_km
-
         # Current optimization criterion
         self.criterion = "distance"
 
@@ -157,15 +154,13 @@ class Route(Arista):
         self.aircraft_options = []
 
         # Dynamic route state
-        self.blocked = False
+        self._is_available = is_available
 
         # Subsidized route support
         self.subsidized = False
 
         # Minimum destination stay time
         self.min_stay = 0
-
-        self.is_available = is_available
 
     def add_aircraft_option(self, aircraft_option):
         """
@@ -180,16 +175,25 @@ class Route(Arista):
             aircraft_option
         )
 
+    @property
     def is_available(self):
-        """
-        Check whether route is available.
+        """Return whether the route is currently operational."""
 
-        Returns:
-            bool:
-                True if route is operational.
-        """
+        return self._is_available
 
-        return not self.blocked
+    @is_available.setter
+    def is_available(self, value):
+        self._is_available = bool(value)
+
+    @property
+    def blocked(self):
+        """Compatibility alias for code that still uses blocked."""
+
+        return not self._is_available
+
+    @blocked.setter
+    def blocked(self, value):
+        self._is_available = not bool(value)
 
     def calculate_cost(self, aircraft_option):
         """
@@ -241,42 +245,33 @@ class Route(Arista):
                     - time
         """
 
-        self.criterion = criterion
+        normalized_criterion = str(criterion).strip().lower()
+        self.criterion = normalized_criterion
 
-        # DISTANCE OPTIMIZATION
-        if criterion == "distance":
-
+        if normalized_criterion == "distance":
             self.peso = self.distance_km
+            return
 
-        # COST OPTIMIZATION
-        elif criterion == "cost":
-
-            best_cost = min(
-
-                self.calculate_cost(aircraft)
-
-                for aircraft in self.aircraft_options
+        if not self.aircraft_options:
+            raise ValueError(
+                f"Route {self.origin.id} -> {self.destination.id} has no aircraft options for '{normalized_criterion}' optimization"
             )
 
-            self.peso = best_cost
+        metric_getters = {
+            "cost": self.calculate_cost,
+            "time": self.calculate_time,
+        }
 
-        # TIME OPTIMIZATION
-        elif criterion == "time":
-
-            best_time = min(
-
-                self.calculate_time(aircraft)
-
-                for aircraft in self.aircraft_options
-            )
-
-            self.peso = best_time
-
-        else:
-
+        metric_getter = metric_getters.get(normalized_criterion)
+        if metric_getter is None:
             raise ValueError(
                 f"Invalid criterion: {criterion}"
             )
+
+        self.peso = min(
+            metric_getter(aircraft)
+            for aircraft in self.aircraft_options
+        )
 
     def getPeso(self):
         """

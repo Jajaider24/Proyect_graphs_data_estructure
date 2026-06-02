@@ -1,18 +1,17 @@
 """
-Base graph module - Academic graph structures.
+Base graph module.
 
-This module contains the academic graph implementation
-provided during class lectures.
+This module provides the generic graph primitives used by the project.
 
 Core structures:
-    - Vertice
     - Arista
+    - Vertice (compatibility helper)
     - Grafo
 
-The project extends these structures using:
-    - Airport extends Vertice
-    - Route extends Arista
-    - Graph extends Grafo
+The project uses these building blocks with domain objects such as:
+    - Airport
+    - Route
+    - Graph
 """
 
 import heapq
@@ -70,7 +69,7 @@ class Arista:
 
 class Vertice:
     """
-    Represents a graph vertex.
+    Represents a generic graph vertex.
 
     Stores:
         - Identifier
@@ -126,13 +125,13 @@ class Grafo:
     """
     Directed weighted graph implementation.
 
-    This is the academic graph structure used
-    throughout the airline simulation project.
+    The graph stores generic nodes indexed by their ``id`` attribute.
+    Nodes are expected to expose an adjacency list API compatible with:
+        - agregar_adyacencia(arista)
+        - obtener_adyacencias()
 
-    The graph uses adjacency lists because:
-        - Airline networks are sparse graphs
-        - Adjacency lists are memory-efficient
-        - Traversals become more efficient
+    The graph uses adjacency lists because airline networks are sparse,
+    so they are memory-efficient and traversal-friendly.
     """
 
     def __init__(self):
@@ -149,7 +148,7 @@ class Grafo:
 
         Args:
             vertice:
-                Vertex object.
+                Node object with an ``id`` attribute.
         """
 
         self.vertices[vertice.id] = vertice
@@ -199,7 +198,7 @@ class Grafo:
             destino_id
         )
 
-        if origen and destino:
+        if origen and destino and hasattr(origen, "agregar_adyacencia"):
 
             arista = Arista(
                 destino,
@@ -217,7 +216,8 @@ class Grafo:
 
         for vertice in self.vertices.values():
 
-            vertice.visitado = False
+            if hasattr(vertice, "visitado"):
+                vertice.visitado = False
 
     def dijkstra_simple(
         self,
@@ -304,6 +304,9 @@ class Grafo:
                     current_id
                 )
             )
+
+            if current_vertex is None or not hasattr(current_vertex, "obtener_adyacencias"):
+                continue
 
             # Explore adjacency list
             for arista in (

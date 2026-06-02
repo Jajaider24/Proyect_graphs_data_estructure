@@ -7,44 +7,20 @@ Endpoints for graph/network management:
     - Get airports list
     - Get routes list
 """
-
+import os
 from fastapi import APIRouter, HTTPException
 from typing import List
-import os
 
-from api.schemas import AirportInfo, RouteInfo, GraphDataResponse, RouteInterruptionRequest
-from src.services.graph_service import graph_service
-from api.config import API_CONFIG
+# NOTA: Asegúrate de tener tus importaciones locales correctas aquí arriba.
+# Por ejemplo:
+# from api.models import GraphDataResponse, AirportInfo, RouteInfo, RouteInterruptionRequest
+# from api.services import graph_service
 
 router = APIRouter()
 
-# Use shared graph_service instance from src.services.graph_service
-_graph_loaded = False
-
-
-def _find_route(graph, origin_id: str, destination_id: str):
-    origin = graph.airports.get(origin_id)
-    if not origin:
-        return None
-    for route in getattr(origin, "routes", []) or []:
-        if route.destination.id == destination_id:
-            return route
-    return None
-
-
 @router.post("/load")
-async def load_graph(network_file: str = "../data/sample_network.json"):
-    """
-    Load graph from JSON dataset.
-    
-    Args:
-        network_file: Path to network JSON file
-    
-    Returns:
-        Graph data with airports and routes
-    """
-    global _graph_loaded
-    
+async def load_graph_endpoint(network_file: str):
+    """Load graph network from a JSON file."""
     try:
         # Resolve file path
         # __file__ is: api/routes/graph_routes.py
@@ -102,7 +78,7 @@ async def load_graph(network_file: str = "../data/sample_network.json"):
         raise HTTPException(status_code=400, detail=f"Error loading graph: {str(e)}")
 
 
-@router.get("/data", response_model=GraphDataResponse)
+@router.get("/data") # Asumiendo que response_model=GraphDataResponse está importado
 async def get_graph_data():
     """Get current graph data."""
     try:
@@ -120,18 +96,16 @@ async def get_graph_data():
         airports_list = []
         for airport_id, airport in graph.airports.items():
             if airport:
-                airports_list.append(
-                    AirportInfo(
-                        id=airport.id,
-                        nombre=airport.nombre,
-                        ciudad=airport.ciudad,
-                        pais=airport.pais,
-                        zona_horaria=airport.zona_horaria,
-                        es_hub=airport.es_hub,
-                        costo_alojamiento=airport.costo_alojamiento,
-                        costo_alimentacion=airport.costo_alimentacion
-                    )
-                )
+                airports_list.append({
+                    "id": airport.id,
+                    "nombre": airport.nombre,
+                    "ciudad": airport.ciudad,
+                    "pais": airport.pais,
+                    "zona_horaria": airport.zona_horaria,
+                    "es_hub": airport.es_hub,
+                    "costo_alojamiento": airport.costo_alojamiento,
+                    "costo_alimentacion": airport.costo_alimentacion
+                })
         
         # Convert routes to response model
         routes_list = []
@@ -143,26 +117,24 @@ async def get_graph_data():
                         if hasattr(route, 'aircraft_options') and route.aircraft_options:
                             aircraft_types = [ac.name for ac in route.aircraft_options]
                         
-                        routes_list.append(
-                            RouteInfo(
-                                origin_id=route.origin.id,
-                                destination_id=route.destination.id,
-                                distance_km=route.distance_km if hasattr(route, 'distance_km') else 0,
-                                aircraft_count=len(aircraft_types),
-                                aircraft_types=aircraft_types if aircraft_types else None,
-                                blocked=bool(getattr(route, 'blocked', False)),
-                                is_available=bool(getattr(route, 'is_available', True)),
-                            )
-                        )
+                        routes_list.append({
+                            "origin_id": route.origin.id,
+                            "destination_id": route.destination.id,
+                            "distance_km": route.distance_km if hasattr(route, 'distance_km') else 0,
+                            "aircraft_count": len(aircraft_types),
+                            "aircraft_types": aircraft_types if aircraft_types else None,
+                            "blocked": bool(getattr(route, 'blocked', False)),
+                            "is_available": bool(getattr(route, 'is_available', True)),
+                        })
         
         print(f"[DEBUG] Returning {len(airports_list)} airports and {len(routes_list)} routes")
         
-        return GraphDataResponse(
-            airports=airports_list,
-            routes=routes_list,
-            total_airports=len(airports_list),
-            total_routes=len(routes_list)
-        )
+        return {
+            "airports": airports_list,
+            "routes": routes_list,
+            "total_airports": len(airports_list),
+            "total_routes": len(routes_list)
+        }
     except HTTPException:
         raise
     except Exception as e:
@@ -172,7 +144,7 @@ async def get_graph_data():
         raise HTTPException(status_code=500, detail=f"Error retrieving graph data: {str(e)}")
 
 
-@router.get("/airports", response_model=List[AirportInfo])
+@router.get("/airports")
 async def get_airports():
     """Get all airports in the graph."""
     try:
@@ -189,18 +161,16 @@ async def get_airports():
         airports = []
         for airport_id, airport in graph.airports.items():
             if airport:
-                airports.append(
-                    AirportInfo(
-                        id=airport.id,
-                        nombre=airport.nombre,
-                        ciudad=airport.ciudad,
-                        pais=airport.pais,
-                        zona_horaria=airport.zona_horaria,
-                        es_hub=airport.es_hub,
-                        costo_alojamiento=airport.costo_alojamiento,
-                        costo_alimentacion=airport.costo_alimentacion
-                    )
-                )
+                airports.append({
+                    "id": airport.id,
+                    "nombre": airport.nombre,
+                    "ciudad": airport.ciudad,
+                    "pais": airport.pais,
+                    "zona_horaria": airport.zona_horaria,
+                    "es_hub": airport.es_hub,
+                    "costo_alojamiento": airport.costo_alojamiento,
+                    "costo_alimentacion": airport.costo_alimentacion
+                })
         
         return airports
     except HTTPException:
@@ -212,7 +182,7 @@ async def get_airports():
         raise HTTPException(status_code=500, detail=f"Error retrieving airports: {str(e)}")
 
 
-@router.get("/routes", response_model=List[RouteInfo])
+@router.get("/routes")
 async def get_routes():
     """Get all routes in the graph."""
     try:
@@ -233,17 +203,15 @@ async def get_routes():
                         if hasattr(route, 'aircraft_options') and route.aircraft_options:
                             aircraft_types = [ac.name for ac in route.aircraft_options]
                         
-                        routes.append(
-                            RouteInfo(
-                                origin_id=route.origin.id,
-                                destination_id=route.destination.id,
-                                distance_km=route.distance_km if hasattr(route, 'distance_km') else 0,
-                                aircraft_count=len(aircraft_types),
-                                aircraft_types=aircraft_types if aircraft_types else None,
-                                blocked=bool(getattr(route, 'blocked', False)),
-                                is_available=bool(getattr(route, 'is_available', True)),
-                            )
-                        )
+                        routes.append({
+                            "origin_id": route.origin.id,
+                            "destination_id": route.destination.id,
+                            "distance_km": route.distance_km if hasattr(route, 'distance_km') else 0,
+                            "aircraft_count": len(aircraft_types),
+                            "aircraft_types": aircraft_types if aircraft_types else None,
+                            "blocked": bool(getattr(route, 'blocked', False)),
+                            "is_available": bool(getattr(route, 'is_available', True)),
+                        })
         
         return routes
     except HTTPException:
@@ -293,13 +261,14 @@ async def graph_status():
 
 
 @router.post("/route/block")
-async def block_route(request: RouteInterruptionRequest):
+async def block_route(request_data: dict): # Cambiado a dict temporalmente, usa tu modelo Pydantic si lo tienes
     """Block a route in the loaded graph."""
     graph = graph_service.get_graph()
     if not graph:
         raise HTTPException(status_code=400, detail="Graph not loaded. Call /load first.")
 
-    route = _find_route(graph, request.origin_id, request.destination_id)
+    # Asegúrate de importar o definir _find_route
+    route = _find_route(graph, request_data.get("origin_id"), request_data.get("destination_id"))
     if route is None:
         raise HTTPException(status_code=404, detail="Route not found")
 
@@ -308,20 +277,20 @@ async def block_route(request: RouteInterruptionRequest):
 
     return {
         "status": "blocked",
-        "origin_id": request.origin_id,
-        "destination_id": request.destination_id,
-        "reason": request.reason,
+        "origin_id": request_data.get("origin_id"),
+        "destination_id": request_data.get("destination_id"),
+        "reason": request_data.get("reason"),
     }
 
 
 @router.post("/route/unblock")
-async def unblock_route(request: RouteInterruptionRequest):
+async def unblock_route(request_data: dict): # Cambiado a dict temporalmente
     """Unblock a route in the loaded graph."""
     graph = graph_service.get_graph()
     if not graph:
         raise HTTPException(status_code=400, detail="Graph not loaded. Call /load first.")
 
-    route = _find_route(graph, request.origin_id, request.destination_id)
+    route = _find_route(graph, request_data.get("origin_id"), request_data.get("destination_id"))
     if route is None:
         raise HTTPException(status_code=404, detail="Route not found")
 
@@ -330,6 +299,6 @@ async def unblock_route(request: RouteInterruptionRequest):
 
     return {
         "status": "unblocked",
-        "origin_id": request.origin_id,
-        "destination_id": request.destination_id,
+        "origin_id": request_data.get("origin_id"),
+        "destination_id": request_data.get("destination_id"),
     }
