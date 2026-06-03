@@ -11,6 +11,8 @@ import os
 from fastapi import APIRouter, HTTPException
 from typing import List
 
+from src.services.graph_service import graph_service
+
 # NOTA: Asegúrate de tener tus importaciones locales correctas aquí arriba.
 # Por ejemplo:
 # from api.models import GraphDataResponse, AirportInfo, RouteInfo, RouteInterruptionRequest

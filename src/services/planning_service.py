@@ -542,11 +542,23 @@ class PlanningSession:
         jobs = getattr(airport, "trabajos", []) or []
         lodging_required = self._lodging_required()
         meal_required = self._meal_required()
+        # Determine job eligibility using network configuration percentage (presupuestoMinimoPorc)
+        min_pct = self.net_config.get("presupuestoMinimoPorc", 35)
+        try:
+            min_pct_val = float(min_pct)
+        except Exception:
+            min_pct_val = 35.0
+        threshold_value = self.traveler.initial_budget * (min_pct_val / 100.0) if self.traveler.initial_budget else 0.0
+        can_take_job = self.traveler.current_budget <= threshold_value
+        # Expose current budget percent for UI
+        budget_percent = (self.traveler.current_budget / self.traveler.initial_budget * 100.0) if self.traveler.initial_budget else 0.0
 
         return {
             "flights": flights,
             "activities": activities,
             "jobs": jobs,
+            "can_take_job": can_take_job,
+            "budget_percent": round(budget_percent, 2),
             "lodging_required": lodging_required,
             "meal_required": meal_required,
             "pending_min_stay_minutes": round(self.pending_min_stay_minutes, 2),

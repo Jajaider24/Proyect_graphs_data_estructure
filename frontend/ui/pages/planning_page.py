@@ -551,6 +551,8 @@ class PlanningPage:
         controls.append(ft.Text("Trabajos disponibles:", weight=ft.FontWeight.BOLD))
         if not options.get("jobs"):
             controls.append(ft.Text("No hay trabajos disponibles en este aeropuerto."))
+        else: 
+            controls.append(ft.Text("Solo se pueden aceptar trabajos cuando se llegue al 35% del presupuesto inicial", color = "orange"))
         for job in options.get("jobs", []):
             hours_input = ft.TextField(label="Horas", width=80)
             btn = ft.ElevatedButton(

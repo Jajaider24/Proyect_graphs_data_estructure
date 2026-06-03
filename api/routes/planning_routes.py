@@ -416,11 +416,17 @@ async def get_session_options(session_id: str):
         )
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
+
+
+@router.post("/session/{session_id}/decision")
+async def post_session_decision(session_id: str, decision: DecisionRequest):
     try:
         result = planning_service.apply_session_decision(session_id, decision.dict())
         return result
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))
+
+
 @router.get("/session/{session_id}/state", response_model=SessionStateResponse)
 async def get_session_state(session_id: str):
     try:

@@ -130,6 +130,8 @@ class SessionOptionsResponse(BaseModel):
     flights: List[Dict[str, Any]] = Field(default_factory=list)
     activities: List[Dict[str, Any]] = Field(default_factory=list)
     jobs: List[Dict[str, Any]] = Field(default_factory=list)
+    can_take_job: bool = False
+    budget_percent: float = 100.0
     lodging_required: bool = False
     meal_required: bool = False
     pending_min_stay_minutes: float = 0
