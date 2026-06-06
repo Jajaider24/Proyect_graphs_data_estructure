@@ -5,16 +5,8 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 
-def find_best_itinerary(
-    graph: Any,
-    origin: str,
-    max_budget: float,
-    max_time: float,
-    allowed_transports: Set[str],
-    required_transports: Set[str],
-    include_secondary_airports: bool,
-    objective: str,
-) -> Dict[str, Any]:
+def find_best_itinerary(graph: Any, origin: str, max_budget: float, max_time: float, allowed_transports: Set[str],
+    required_transports: Set[str], include_secondary_airports: bool, objective: str,) -> Dict[str, Any]:
     """Generate the best itinerary option under given constraints.
 
     Alternatives:
@@ -56,15 +48,8 @@ def find_best_itinerary(
             options.sort(key=lambda a: (route.calculate_time(a), route.calculate_cost(a)))
         return options
 
-    def dfs(
-        current_airport_id: str,
-        visited: Set[str],
-        flights: List[Dict[str, Any]],
-        total_cost: float,
-        total_time: float,
-        total_distance: float,
-        used_transports: Set[str],
-    ):
+    def dfs(current_airport_id: str, visited: Set[str], flights: List[Dict[str, Any]],
+        total_cost: float, total_time: float, total_distance: float, used_transports: Set[str],):
         nonlocal best_payload, best_score
 
         # Keep the route in travel order; `visited` is only for cycle detection.
@@ -108,14 +93,11 @@ def find_best_itinerary(
             if destination_id in visited:
                 continue
 
-            if (
-                not include_secondary_airports
-                and not destination.es_hub
-                and destination_id != origin
-            ):
+            if (not include_secondary_airports and not destination.es_hub and destination_id != origin):
                 continue
 
             aircraft_options = select_aircraft_options(route)
+            
             if not aircraft_options:
                 continue
 
@@ -184,5 +166,4 @@ def find_best_itinerary(
             "used_transport_types": [],
             "transport_requirement_met": False,
         }
-
     return best_payload

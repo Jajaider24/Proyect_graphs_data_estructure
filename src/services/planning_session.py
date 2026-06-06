@@ -1,7 +1,6 @@
 """Interactive planning session layer representing travelers during simulations."""
 
 from __future__ import annotations
-
 from typing import Any, Dict, List, Optional, Set
 from src.core.traveler import Traveler
 from src.algorithms.itinerary_finder import find_best_itinerary
@@ -10,14 +9,8 @@ from src.algorithms.itinerary_finder import find_best_itinerary
 class PlanningSession:
     """Represents an interactive planning session for a single traveler."""
 
-    def __init__(
-        self,
-        session_id: str,
-        graph: Any,
-        traveler: Traveler,
-        allowed_transports: Set[str],
-        include_secondary_airports: bool = True,
-    ):
+    def __init__(self, session_id: str, graph: Any, traveler: Traveler,
+        allowed_transports: Set[str], include_secondary_airports: bool = True,):
         self.session_id = session_id
         self.graph = graph
         self.traveler = traveler
@@ -81,7 +74,7 @@ class PlanningSession:
         if not origin:
             self.recommended_itinerary = {}
             return
-
+        
         self.recommended_itinerary = find_best_itinerary(
             graph=self.graph,
             origin=origin,
@@ -112,15 +105,8 @@ class PlanningSession:
             return False
         return self._projected_subsidized_pct(distance, True) > 20.0
 
-    def _flight_block_reason(
-        self,
-        *,
-        distance: float,
-        cost: float,
-        subsidized: bool,
-        route_blocked: bool,
-        can_take_flight: bool,
-    ) -> Optional[str]:
+    def _flight_block_reason(self, *, distance: float, cost: float, subsidized: bool,
+        route_blocked: bool, can_take_flight: bool,) -> Optional[str]:
         if not can_take_flight:
             return "Debe completar la estancia mínima o el alojamiento obligatorio antes de volar"
         if route_blocked:
@@ -165,11 +151,7 @@ class PlanningSession:
             if route.destination.id in self.traveler.visited_airports:
                 continue
 
-            if (
-                not self.include_secondary_airports
-                and not route.destination.es_hub
-                and route.destination.id != self.traveler.current_airport.id
-            ):
+            if (not self.include_secondary_airports and not route.destination.es_hub and route.destination.id != self.traveler.current_airport.id):
                 continue
 
             for aircraft in getattr(route, "aircraft_options", []) or []:

@@ -1,10 +1,8 @@
 """Planning service layer for itinerary alternatives and constraints."""
 
 from __future__ import annotations
-
 from typing import Any, Dict, List, Optional, Set
 import uuid
-
 from src.core.traveler import Traveler
 from src.algorithms.itinerary_finder import find_best_itinerary
 from src.services.planning_session import PlanningSession
@@ -12,27 +10,16 @@ from src.services.planning_session import PlanningSession
 
 class PlanningService:
     """Planning orchestration service."""
-
     def __init__(self):
         # In-memory session store: session_id -> PlanningSession
         self.sessions: Dict[str, PlanningSession] = {}
-
-    def execute_planning(
-        self,
-        graph: Any,
-        origin: str,
-        budget: float,
-        available_time_minutes: float,
-        preferred_transports: Optional[List[str]] = None,
-        include_secondary_airports: bool = True,
-    ) -> Dict[str, Any]:
+    def execute_planning(self, graph: Any, origin: str, budget: float, available_time_minutes: float,
+        preferred_transports: Optional[List[str]] = None, include_secondary_airports: bool = True,) -> Dict[str, Any]:
         """Generate two itinerary alternatives for basic planning requirement 2.2.
-
         Alternatives:
         - maximize destinations under budget
         - maximize destinations under time
         """
-
         if not graph or origin not in graph.airports:
             raise ValueError(f"Origin airport '{origin}' not found")
 
@@ -91,27 +78,19 @@ class PlanningService:
                     transport_types.add(aircraft.name)
         return transport_types
 
-    def create_session(
-        self,
-        graph: Any,
-        origin: str,
-        initial_budget: float,
-        available_time_minutes: float,
-        preferred_transports: Optional[List[str]] = None,
-        include_secondary_airports: bool = True,
-    ) -> Dict[str, Any]:
+    def create_session(self, graph: Any, origin: str, initial_budget: float, available_time_minutes: float,
+        preferred_transports: Optional[List[str]] = None, include_secondary_airports: bool = True,) -> Dict[str, Any]:
         """Create a step-by-step planning session for dynamic budgeting (requirement 2.3).
 
         Returns a session descriptor with `session_id` and initial state.
         """
-
         if not graph or origin not in graph.airports:
             raise ValueError(f"Origin airport '{origin}' not found")
-
+        
         session_id = str(uuid.uuid4())
-
         # Determine allowed transports
         available_transport_types = set()
+        
         for airport in graph.airports.values():
             for route in getattr(airport, "routes", []) or []:
                 for aircraft in getattr(route, "aircraft_options", []) or []:
@@ -135,9 +114,7 @@ class PlanningService:
             allowed_transports=set(allowed_transports),
             include_secondary_airports=include_secondary_airports,
         )
-
         self.sessions[session_id] = session
-
         return {"session_id": session_id, "state": session.get_state()}
 
     def get_session_options(self, session_id: str) -> Dict[str, Any]:
@@ -158,13 +135,8 @@ class PlanningService:
             raise ValueError("Session not found")
         return session.get_state()
 
-    def interrupt_route(
-        self,
-        origin_id: Optional[str] = None,
-        destination_id: Optional[str] = None,
-        session_id: Optional[str] = None,
-        reason: str = "Interrupcion operativa",
-    ) -> Dict[str, Any]:
+    def interrupt_route(self, origin_id: Optional[str] = None, destination_id: Optional[str] = None,
+        session_id: Optional[str] = None, reason: str = "Interrupcion operativa",) -> Dict[str, Any]:
         graph = None
         target_session = None
         if session_id:
@@ -217,7 +189,6 @@ class PlanningService:
         if not session:
             raise ValueError("Session not found")
         return session.build_final_report()
-
 
 # Re-export PlanningSession for backward compatibility
 __all__ = ["PlanningService", "PlanningSession"]

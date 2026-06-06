@@ -4,7 +4,6 @@ Airport module - Airport domain model.
 Represents airports as graph nodes in the airline network.
 """
 
-
 class Airport:
     """
     Represents an airport node in the graph.
@@ -51,21 +50,18 @@ class Airport:
 
     def agregar_adyacencia(self, arista):
         """Add a route to the airport adjacency list."""
-
         self.adyacencias.append(arista)
 
     def obtener_adyacencias(self):
         """Return the airport adjacency list."""
-
         return self.adyacencias
 
-    @property
+    @property #The decorator is used to define a class method as if it were an attribute
     def routes(self):
         """Compatibility alias for the adjacency list."""
-
         return self.adyacencias
 
-    @routes.setter
+    @routes.setter #This decorator is used to assign a new value to adjacencies as an OOP setter.
     def routes(self, value):
         self.adyacencias = list(value)
 
@@ -73,7 +69,6 @@ class Airport:
         """
         String representation of airport.
         """
-
         return (
             f"{self.id} - "
             f"{self.ciudad}, "

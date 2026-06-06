@@ -33,13 +33,7 @@ class Traveler:
         - Budget optimization
         - Final reporting
     """
-
-    def __init__(
-        self,
-        current_airport=None,
-        initial_budget=0,
-        available_time=0
-    ):
+    def __init__(self, current_airport=None, initial_budget=0, available_time=0):
         """
         Initialize traveler state.
 
@@ -111,7 +105,6 @@ class Traveler:
             airport:
                 Airport object being visited.
         """
-
         # Update current traveler location
         self.current_airport = airport
 
@@ -127,9 +120,7 @@ class Traveler:
             amount (float):
                 Expense amount in USD.
         """
-
         self.current_budget -= amount
-
         self.total_spent += amount
 
     def earn_money(self, amount):
@@ -140,9 +131,7 @@ class Traveler:
             amount (float):
                 Earned amount in USD.
         """
-
         self.current_budget += amount
-
         self.total_earned += amount
 
     def consume_time(self, minutes):
@@ -153,18 +142,15 @@ class Traveler:
             minutes (int):
                 Time consumed in minutes.
         """
-
         self.remaining_time -= minutes
 
     def can_continue(self):
         """
         Check whether the traveler can continue the trip.
-
         Returns:
             bool:
                 True if traveler still has budget and time.
         """
-
         return (
             self.current_budget > 0
             and self.remaining_time > 0
@@ -182,9 +168,7 @@ class Traveler:
             bool:
                 True if budget threshold is reached.
         """
-
         threshold = self.initial_budget * 0.35
-
         return self.current_budget <= threshold
 
     def __str__(self):
@@ -192,7 +176,6 @@ class Traveler:
         String representation of traveler state.
         Useful for debugging and reports.
         """
-
         return (
             f"Traveler("
             f"airport={self.current_airport.id if self.current_airport else 'None'}, "
@@ -200,6 +183,7 @@ class Traveler:
             f"time={self.remaining_time}"
             f")"
         )
+    
     def clone(self):
         """
         Create a deep copy of the traveler state.
@@ -234,4 +218,3 @@ class Traveler:
         cloned.hours_since_last_lodging = self.hours_since_last_lodging
 
         return cloned
-    

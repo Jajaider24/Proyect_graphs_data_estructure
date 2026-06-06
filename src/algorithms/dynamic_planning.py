@@ -9,11 +9,7 @@ This module contains dynamic simulation systems used for:
 """
 
 
-def job_recommendation_engine(
-    airport,
-    traveler,
-    available_hours
-):
+def job_recommendation_engine(airport, traveler, available_hours):
     """
     Recommend jobs when the traveler budget
     falls below the minimum threshold.
@@ -42,117 +38,67 @@ def job_recommendation_engine(
     # -----------------------------------------
 
     if not traveler.budget_threshold_reached():
-
         return {
-
             "worked": False,
-
-            "reason":
-                "Budget threshold not reached.",
-
+            "reason": "Budget threshold not reached.",
             "earnings": 0
         }
 
     # -----------------------------------------
     # CHECK AVAILABLE JOBS
     # -----------------------------------------
-
     if not airport.trabajos:
-
         return {
-
             "worked": False,
-
-            "reason":
-                "No jobs available at airport.",
-
+            "reason": "No jobs available at airport.",
             "earnings": 0
         }
 
     # -----------------------------------------
     # FIND BEST JOB
     # -----------------------------------------
-
     best_job = None
-
     best_earnings = 0
-
     best_hours = 0
 
     for job in airport.trabajos:
-
         # Maximum hours allowed
-        workable_hours = min(
-
-            available_hours,
-
-            job["maxHoras"]
-        )
+        workable_hours = min(available_hours, job["maxHoras"])
 
         # Calculate earnings
-        earnings = (
-            workable_hours
-            * job["tarifaHora"]
-        )
+        earnings = (workable_hours * job["tarifaHora"])
 
         if earnings > best_earnings:
-
             best_earnings = earnings
-
             best_job = job
-
             best_hours = workable_hours
 
     # -----------------------------------------
     # APPLY JOB TO TRAVELER
     # -----------------------------------------
 
-    traveler.earn_money(
-        best_earnings
-    )
+    traveler.earn_money(best_earnings)
 
-    traveler.consume_time(
-        best_hours * 60
-    )
+    traveler.consume_time(best_hours * 60)
 
     traveler.jobs_done.append({
-
         "airport": airport.id,
-
-        "job_name":
-            best_job["nombre"],
-
-        "hours":
-            best_hours,
-
-        "earnings":
-            best_earnings
+        "job_name": best_job["nombre"],
+        "hours": best_hours,
+        "earnings": best_earnings
     })
 
     # -----------------------------------------
     # RETURN RESULT
     # -----------------------------------------
-
     return {
-
         "worked": True,
-
         "airport": airport.id,
-
-        "job_name":
-            best_job["nombre"],
-
-        "hours":
-            best_hours,
-
-        "earnings":
-            best_earnings,
-
-        "remaining_budget":
-            traveler.current_budget,
-
-        "remaining_time":
-            traveler.remaining_time
+        "job_name": best_job["nombre"],
+        "hours": best_hours,
+        "earnings": best_earnings,
+        "remaining_budget": traveler.current_budget,
+        "remaining_time": traveler.remaining_time
     }
 
 
@@ -170,12 +116,10 @@ def print_job_summary(result):
     )
 
     if not result["worked"]:
-
         print(
             f"No work performed.\n"
             f"Reason: {result['reason']}"
         )
-
         return
 
     print(
@@ -208,13 +152,7 @@ def print_job_summary(result):
         f"{result['remaining_time']:.2f} min"
     )
 
-def simulate_airport_stay(
-    airport,
-    traveler,
-    activity_limit=2,
-    lodging_interval_hours: float = 20.0,
-    meal_interval_hours: float = 8.0,
-):
+def simulate_airport_stay(airport, traveler, activity_limit=2, lodging_interval_hours: float = 20.0, meal_interval_hours: float = 8.0,):
     """
     Simulate traveler stay at an airport.
 
@@ -242,23 +180,14 @@ def simulate_airport_stay(
     # -----------------------------------------
     # INITIALIZE SUMMARY
     # -----------------------------------------
-
     summary = {
-
         "airport": airport.id,
-
         "activities_done": [],
-
         "lodging_cost": 0,
-
         "food_cost": 0,
-
         "activities_cost": 0,
-
         "activities_time": 0,
-
         "total_cost": 0,
-
         "total_time": 0
     }
 
@@ -312,37 +241,20 @@ def simulate_airport_stay(
     # -----------------------------------------
     # ACTIVITIES
     # -----------------------------------------
-
     selected_activities = (airport.actividades[:activity_limit])
 
-    for activity in (
-        selected_activities
-    ):
-
-        activity_cost = (
-                activity["costoUSD"]
-            )
-
-        activity_time = (
-                activity["duracionMin"]
-            )
-        if (
-            traveler.current_budget
-            < activity_cost
-        ):
-         continue
+    for activity in (selected_activities):
+        activity_cost = (activity["costoUSD"])
+        activity_time = (activity["duracionMin"])
+        if (traveler.current_budget < activity_cost):
+            continue
 
         # Skip activity if no time
-        if (
-            traveler.remaining_time
-            < activity_time
-        ):
+        if (traveler.remaining_time < activity_time):
             continue
 
         # Apply activity effects
-        traveler.spend_money(
-            activity_cost
-        )
+        traveler.spend_money(activity_cost)
 
         traveler.consume_time(activity_time)
         # update hours counters
@@ -352,54 +264,23 @@ def simulate_airport_stay(
             traveler.hours_since_last_lodging += activity_time / 60.0
 
         traveler.activities_done.append({
-
-            "airport":
-                airport.id,
-
-            "activity":
-                activity["nombre"]
+            "airport": airport.id,
+            "activity": activity["nombre"]
         })
 
-        summary[
-            "activities_done"
-        ].append(
-
-            activity["nombre"]
-        )
-
-        summary[
-            "activities_cost"
-        ] += activity_cost
-
-        summary[
-            "activities_time"
-        ] += activity_time
+        summary["activities_done"].append(activity["nombre"])
+        summary["activities_cost"] += activity_cost
+        summary["activities_time"] += activity_time
 
     # -----------------------------------------
     # CALCULATE TOTALS
     # -----------------------------------------
-
-    total_cost = (
-
-        summary["lodging_cost"]
-
-        + summary["food_cost"]
-
-        + summary["activities_cost"]
-    )
-
-    summary["total_cost"] = (
-        total_cost
-    )
-
-    summary["total_time"] += (
-        summary["activities_time"]
-    )
-
+    total_cost = (summary["lodging_cost"] + summary["food_cost"] + summary["activities_cost"])
+    summary["total_cost"] = (total_cost)
+    summary["total_time"] += (summary["activities_time"])
     # -----------------------------------------
     # RETURN SUMMARY
     # -----------------------------------------
-
     return summary
 
 
@@ -416,9 +297,7 @@ def print_stay_summary(summary):
         "\n===== AIRPORT STAY SUMMARY =====\n"
     )
 
-    print(
-        f"Airport: {summary['airport']}"
-    )
+    print(f"Airport: {summary['airport']}")
 
     print()
 
@@ -442,22 +321,12 @@ def print_stay_summary(summary):
     print(
         "Activities:"
     )
-
     if not summary["activities_done"]:
-
-        print(
-            "   No activities performed."
-        )
-
+        print("   No activities performed.")
     else:
 
-        for activity in (
-            summary["activities_done"]
-        ):
-
-            print(
-                f"   - {activity}"
-            )
+        for activity in (summary["activities_done"]):
+            print(f"   - {activity}")
 
     print()
 
@@ -470,5 +339,3 @@ def print_stay_summary(summary):
         f"Total Time: "
         f"{summary['total_time']} min"
     )
-
-    

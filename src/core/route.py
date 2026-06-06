@@ -19,14 +19,7 @@ class AircraftOption:
 
     This allows realistic multicriteria optimization.
     """
-
-    def __init__(
-        self,
-        name,
-        cost_per_km,
-        speed_kmh,
-        fixed_time_min
-    ):
+    def __init__(self, name, cost_per_km, speed_kmh, fixed_time_min):
         """
         Initialize aircraft option.
 
@@ -43,19 +36,12 @@ class AircraftOption:
             fixed_time_min (float):
                 Boarding + airport fixed time.
         """
-
         self.name = name
-
         self.cost_per_km = cost_per_km
-
         self.speed_kmh = speed_kmh
-
         self.fixed_time_min = fixed_time_min
 
-    def calculate_time(
-        self,
-        distance_km
-    ):
+    def calculate_time(self, distance_km):
         """
         Calculate flight duration.
 
@@ -66,30 +52,17 @@ class AircraftOption:
             float:
                 Duration in minutes.
         """
-
         # Convert hours to minutes
-        flight_time = (
-
-            distance_km
-            / self.speed_kmh
-        ) * 60
-
-        return (
-            flight_time
-            + self.fixed_time_min
-        )
+        flight_time = (distance_km / self.speed_kmh) * 60
+        return (flight_time + self.fixed_time_min)
 
     def __str__(self):
         """
         String representation.
         """
-
         return (
-
             f"{self.name} | "
-
             f"Cost/km={self.cost_per_km} | "
-
             f"Speed={self.speed_kmh} km/h"
         )
 
@@ -97,21 +70,13 @@ class AircraftOption:
 class Route:
     """
     Represents a directed route between two airports.
-
     The route stores:
         - Distance
         - Aircraft options
         - Dynamic restrictions
         - Route state
     """
-
-    def __init__(
-        self,
-        origin,
-        destination,
-        distance_km,
-        is_available=True
-    ):
+    def __init__(self, origin, destination, distance_km, is_available=True):
         """
         Initialize route.
 
@@ -157,15 +122,11 @@ class Route:
             aircraft_option:
                 AircraftOption object.
         """
-
-        self.aircraft_options.append(
-            aircraft_option
-        )
+        self.aircraft_options.append(aircraft_option)
 
     @property
     def is_available(self):
         """Return whether the route is currently operational."""
-
         return self._is_available
 
     @is_available.setter
@@ -175,7 +136,6 @@ class Route:
     @property
     def blocked(self):
         """Compatibility alias for code that still uses blocked."""
-
         return not self._is_available
 
     @blocked.setter
@@ -194,11 +154,7 @@ class Route:
             float:
                 Total route cost.
         """
-
-        return (
-            self.distance_km
-            * aircraft_option.cost_per_km
-        )
+        return (self.distance_km * aircraft_option.cost_per_km)
 
     def calculate_time(self, aircraft_option):
         """
@@ -212,10 +168,7 @@ class Route:
             float:
                 Flight duration in minutes.
         """
-
-        return aircraft_option.calculate_time(
-            self.distance_km
-        )
+        return aircraft_option.calculate_time(self.distance_km)
 
     def update_weight(self, criterion):
         """
@@ -231,14 +184,12 @@ class Route:
                     - cost
                     - time
         """
-
         normalized_criterion = str(criterion).strip().lower()
         self.criterion = normalized_criterion
-
         if normalized_criterion == "distance":
             self.peso = self.distance_km
             return
-
+        
         if not self.aircraft_options:
             raise ValueError(
                 f"Route {self.origin.id} -> {self.destination.id} has no aircraft options for '{normalized_criterion}' optimization"
@@ -262,7 +213,6 @@ class Route:
 
     def getDestino(self):
         """Retrieve destination airport."""
-
         return self.destination
 
     def getPeso(self):
@@ -275,14 +225,12 @@ class Route:
             float:
                 Current route weight.
         """
-
         return self.peso
 
     def __str__(self):
         """
         String representation of route.
         """
-
         return (
             f"{self.origin.id} -> "
             f"{self.destination.id} "
