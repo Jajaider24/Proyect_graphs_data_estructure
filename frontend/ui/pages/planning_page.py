@@ -36,9 +36,13 @@ class PlanningPage:
         self.preview_monitor_cancelled = False
         self.interrupt_origin_field = None
         self.interrupt_destination_field = None
+        self.view = None
     
     def build(self) -> ft.Column:
         """Build planning page UI."""
+        if self.view is not None:
+            return self.view
+
         self.origin_field = ft.TextField(
             label="Aeropuerto de Origen",
             hint_text="Ej: MDE",
@@ -83,7 +87,7 @@ class PlanningPage:
             width=150,
         )
 
-        return ft.Column([
+        self.view = ft.Column([
             # Title
             ft.Row([
                 ft.Text(
@@ -187,6 +191,7 @@ class PlanningPage:
             ),
 
         ], expand=True, spacing=SIZES["PADDING"], scroll=ft.ScrollMode.AUTO)
+        return self.view
 
     def _create_results_column(self) -> ft.Column:
         """Create the results column and keep a reference for updates."""
@@ -402,11 +407,13 @@ class PlanningPage:
         self.transit_monitor_base = dict(base_transit)
 
         try:
+            state = None
             for elapsed_seconds in range(61):
                 if self.transit_monitor_cancelled:
                     return
 
-                state = await api_client.get_session_state(session_id)
+                if elapsed_seconds == 0:
+                    state = await api_client.get_session_state(session_id)
                 current_transit = state.get("transit") or {}
                 if not state.get("in_transit") or not current_transit:
                     await self._on_fetch_options_async(None)
@@ -421,17 +428,35 @@ class PlanningPage:
                         advance_minutes = step_minutes
                         if elapsed_seconds >= 60:
                             advance_minutes = float(current_transit.get("remaining_minutes", step_minutes) or step_minutes)
-                        await api_client.advance_session_transit(session_id, advance_minutes)
+                        result = await api_client.advance_session_transit(session_id, advance_minutes)
+                        state = result.get("state") or state
                     except Exception as exc:
-                        # Show the user the issue and stop the loop so we do not hide backend validation errors.
+                        # Check if the flight was canceled or completed mid-flight
+                        try:
+                            check_state = await api_client.get_session_state(session_id)
+                            if not check_state.get("in_transit"):
+                                await self._on_fetch_options_async(None)
+                                return
+                        except Exception:
+                            pass
+
+                        # Show the user the issue if it is a real connection/validation error
                         self.main_window.show_error(f"No se pudo avanzar el vuelo: {exc}")
                         return
 
-                    state = await api_client.get_session_state(session_id)
                     current_transit = state.get("transit") or current_transit
 
-                options = await api_client.get_session_options(session_id)
-                options_state = options.get("traveler_state", {}) or state
+                # While in transit, available options are empty. Construct dummy options locally to avoid API call.
+                options = {
+                    "flights": [],
+                    "activities": [],
+                    "jobs": [],
+                    "lodging_required": False,
+                    "meal_required": False,
+                    "pending_min_stay_minutes": round(state.get("pending_min_stay_minutes", 0), 2),
+                    "can_take_flight": False,
+                }
+                options_state = state
 
                 # Use the real backend transit state for the card so progress and distance are synced.
                 preview = dict(current_transit)
@@ -584,10 +609,6 @@ class PlanningPage:
 
         graph_page = self.main_window.pages.get("network_graph")
         if graph_page and getattr(graph_page, "stack", None) is not None:
-            try:
-                self.main_window.page.run_task(graph_page.load_data)
-            except Exception:
-                pass
             try:
                 if state.get("in_transit") and transit:
                     graph_page.visualize_path([transit.get("origin"), transit.get("destination")])
@@ -766,6 +787,10 @@ class PlanningPage:
         if not self.session_id:
             self.main_window.show_error("No hay sesión activa")
             return
+
+        # Cancel transit monitor immediately to prevent concurrent advance requests
+        self._cancel_advance_timer()
+
         try:
             origin = (self.interrupt_origin_field.value or "").strip().upper()
             destination = (self.interrupt_destination_field.value or "").strip().upper()
@@ -790,8 +815,15 @@ class PlanningPage:
                 session_id=self.session_id,
                 reason="Interrupcion manual desde interfaz",
             )
-            if self.advance_timer_running:
-                self._cancel_advance_timer()
+            
+            # Force graph page reload when a route is manually blocked
+            graph_page = self.main_window.pages.get("network_graph")
+            if graph_page and getattr(graph_page, "stack", None) is not None:
+                try:
+                    await graph_page.load_data()
+                except Exception:
+                    pass
+
             await self._on_fetch_options_async(None)
             self.main_window.show_success("Ruta interrumpida y plan recalculado")
         except Exception as exc:
