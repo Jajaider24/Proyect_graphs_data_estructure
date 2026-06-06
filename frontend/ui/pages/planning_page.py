@@ -124,12 +124,12 @@ class PlanningPage:
             
             # Action buttons
             ft.Row([
-                ft.ElevatedButton(
+                ft.Button(
                         content=ft.Text("Generar Itinerario"),
                     icon="play_arrow",
                     on_click=self._on_generate_itinerary
                 ),
-                ft.ElevatedButton(
+                ft.Button(
                         content=ft.Text("Iniciar sesión interactiva"),
                     icon="play_arrow", on_click=self._on_start_session
                 ),
@@ -141,12 +141,12 @@ class PlanningPage:
             ], spacing=SIZES["PADDING"]),
             ft.Row([
                 self.stay_minutes_field,
-                ft.ElevatedButton(
+                ft.Button(
                     content=ft.Text("Aplicar stay"),
                     icon="hotel",
                     on_click=self._on_apply_stay,
                 ),
-                ft.ElevatedButton(
+                ft.Button(
                     content=ft.Text("Actualizar opciones"),
                     icon="refresh",
                     on_click=self._on_fetch_options,
@@ -155,12 +155,12 @@ class PlanningPage:
             ft.Row([
                 self.interrupt_origin_field,
                 self.interrupt_destination_field,
-                ft.ElevatedButton(
+                ft.Button(
                     content=ft.Text("Interrumpir ruta"),
                     icon="warning",
                     on_click=self._on_interrupt_route,
                 ),
-                ft.ElevatedButton(
+                ft.Button(
                     content=ft.Text("Generar reporte final"),
                     icon="description",
                     on_click=self._on_get_report,
@@ -509,6 +509,7 @@ class PlanningPage:
                         ft.Text(f"Presupuesto restante: ${state.get('remaining_budget', 0)}"),
                         ft.Text(f"Tiempo restante: {state.get('remaining_time', 0)} min"),
                         ft.Text(f"Estancia mínima pendiente: {options.get('pending_min_stay_minutes', 0)} min"),
+                        ft.Text(f"Distancia subsidiada acumulada: {state.get('subsidized_distance_pct', 0)}% (máx. 20%)"),
                         ft.Text(f"¿Puede volar?: {'Sí' if options.get('can_take_flight', True) else 'No'}"),
                     ], spacing=4),
                 )
@@ -554,21 +555,30 @@ class PlanningPage:
         if not options.get("flights"):
             controls.append(ft.Text("No hay vuelos disponibles desde este aeropuerto."))
         for f in options.get("flights", []):
-            take_btn = ft.ElevatedButton(
+            selectable = f.get("selectable", True)
+            take_btn = ft.Button(
                 "Elegir vuelo",
                 icon="flight_takeoff",
+                disabled=not selectable,
                 on_click=lambda e, payload=f, st=state: self.main_window.page.run_task(self._on_take_flight_async, payload, st)
             )
+            flight_details = [
+                ft.Text(f"{f['origin']} → {f['destination']} ({f['aircraft_type']})", weight=ft.FontWeight.BOLD),
+                ft.Text(f"Distancia: {f['distance']} km | Costo: ${f['cost']} | Tiempo: {f['time']} min"),
+                ft.Text(f"Subsidio: {'Sí' if f.get('subsidized') else 'No'}"),
+            ]
+            if f.get("subsidized"):
+                flight_details.append(
+                    ft.Text(f"Distancia subsidiada proyectada: {f.get('projected_subsidized_pct', 0)}%")
+                )
+            if f.get("block_reason"):
+                flight_details.append(ft.Text(f"No disponible: {f['block_reason']}", color="orange"))
+            flight_details.append(ft.Row([take_btn], spacing=8))
             controls.append(
                 ft.Card(
                     content=ft.Container(
                         padding=SIZES["PADDING"],
-                        content=ft.Column([
-                            ft.Text(f"{f['origin']} → {f['destination']} ({f['aircraft_type']})", weight=ft.FontWeight.BOLD),
-                            ft.Text(f"Distancia: {f['distance']} km | Costo: ${f['cost']} | Tiempo: {f['time']} min"),
-                            ft.Text(f"Subsidio: {'Sí' if f.get('subsidized') else 'No'}"),
-                            ft.Row([take_btn], spacing=8),
-                        ], spacing=4),
+                        content=ft.Column(flight_details, spacing=4),
                     )
                 )
             )
@@ -580,7 +590,7 @@ class PlanningPage:
             controls.append(ft.Text("Solo se pueden aceptar trabajos cuando se llegue al 35% del presupuesto inicial", color = "orange"))
         for job in options.get("jobs", []):
             hours_input = ft.TextField(label="Horas", width=80)
-            btn = ft.ElevatedButton(
+            btn = ft.Button(
                 f"Aceptar {job.get('nombre')} (tarifa {job.get('tarifaHora')})",
                 on_click=lambda e, j=job, h=hours_input: self.main_window.page.run_task(self._on_accept_job_async, (j, h))
             )
@@ -596,7 +606,7 @@ class PlanningPage:
         if not activity_checks:
             controls.append(ft.Text("No hay actividades opcionales en este aeropuerto."))
 
-        apply_acts_btn = ft.ElevatedButton("Aplicar actividades seleccionadas", icon="hiking", on_click=lambda e, items=activity_checks: self.main_window.page.run_task(self._on_apply_activities_async, items))
+        apply_acts_btn = ft.Button("Aplicar actividades seleccionadas", icon="hiking", on_click=lambda e, items=activity_checks: self.main_window.page.run_task(self._on_apply_activities_async, items))
         controls.append(apply_acts_btn)
 
         if options.get("lodging_required"):

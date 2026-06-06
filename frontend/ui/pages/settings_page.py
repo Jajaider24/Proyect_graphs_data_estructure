@@ -82,7 +82,7 @@ class SettingsPage:
                         ], spacing=SIZES["PADDING"]),
                         
                         ft.Row([
-                            ft.ElevatedButton(
+                            ft.Button(
                                     content=ft.Text("Probar Conexión"),
                                 icon="check",
                                 on_click=self._on_test_connection

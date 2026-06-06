@@ -32,25 +32,14 @@ class Graph:
         Initialize graph.
         """
 
-        self.vertices = {}
-        self.airports = self.vertices
-
-    def agregar_vertice(self, vertice):
-        """Add vertex to graph."""
-
-        self.vertices[vertice.id] = vertice
-
-    def obtener_vertice(self, identificador):
-        """Retrieve vertex by ID."""
-
-        return self.vertices.get(identificador)
+        self.airports = {}
 
     def reset_visits(self):
-        """Reset traversal state for all vertices."""
+        """Reset traversal state for all airports."""
 
-        for vertice in self.vertices.values():
-            if hasattr(vertice, "visitado"):
-                vertice.visitado = False
+        for airport in self.airports.values():
+            if hasattr(airport, "visitado"):
+                airport.visitado = False
 
     def add_airport(self, airport):
         """
@@ -61,7 +50,7 @@ class Graph:
                 Airport object.
         """
 
-        self.agregar_vertice(airport)
+        self.airports[airport.id] = airport
 
     def add_route(self, route):
         """
@@ -92,8 +81,8 @@ class Graph:
     def agregar_arista(self, origen_id, destino_id, peso=0):
         """Compatibility helper to add a weighted connection."""
 
-        origen = self.obtener_vertice(origen_id)
-        destino = self.obtener_vertice(destino_id)
+        origen = self.get_airport(origen_id)
+        destino = self.get_airport(destino_id)
 
         if origen and destino and hasattr(origen, "agregar_adyacencia"):
             from src.core.route import Route
@@ -181,8 +170,8 @@ class Graph:
         """Dijkstra shortest path algorithm."""
 
         distances = {
-            vertex_id: math.inf
-            for vertex_id in graph.vertices
+            airport_id: math.inf
+            for airport_id in graph.airports
         }
 
         predecessors = {}
@@ -199,11 +188,11 @@ class Graph:
             if current_distance > distances[current_id]:
                 continue
 
-            current_vertex = graph.obtener_vertice(current_id)
-            if current_vertex is None or not hasattr(current_vertex, "obtener_adyacencias"):
+            current_airport = graph.get_airport(current_id)
+            if current_airport is None or not hasattr(current_airport, "obtener_adyacencias"):
                 continue
 
-            for arista in current_vertex.obtener_adyacencias():
+            for arista in current_airport.obtener_adyacencias():
                 if hasattr(arista, "is_available") and not arista.is_available:
                     continue
 

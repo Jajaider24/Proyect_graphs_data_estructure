@@ -45,6 +45,10 @@ class PlanningSession:
             "visited_airports": list(self.traveler.visited_airports),
             "total_distance": round(self.total_distance, 2),
             "subsidized_distance": round(self.subsidized_distance, 2),
+            "subsidized_distance_pct": round(
+                (self.subsidized_distance / self.total_distance) * 100.0 if self.total_distance > 0 else 0.0,
+                2,
+            ),
             "pending_min_stay_minutes": round(self.pending_min_stay_minutes, 2),
             "jobs_done": list(self.traveler.jobs_done),
             "activities_done": list(self.traveler.activities_done),
@@ -96,6 +100,41 @@ class PlanningSession:
                 return True
         return False
 
+    def _projected_subsidized_pct(self, distance: float, subsidized: bool) -> float:
+        subsidized_after = self.subsidized_distance + (distance if subsidized else 0.0)
+        total_after = self.total_distance + distance
+        if total_after <= 0:
+            return 100.0 if subsidized else 0.0
+        return (subsidized_after / total_after) * 100.0
+
+    def _subsidized_limit_exceeded(self, distance: float, subsidized: bool) -> bool:
+        if not subsidized:
+            return False
+        return self._projected_subsidized_pct(distance, True) > 20.0
+
+    def _flight_block_reason(
+        self,
+        *,
+        distance: float,
+        cost: float,
+        subsidized: bool,
+        route_blocked: bool,
+        can_take_flight: bool,
+    ) -> Optional[str]:
+        if not can_take_flight:
+            return "Debe completar la estancia mínima o el alojamiento obligatorio antes de volar"
+        if route_blocked:
+            return "Ruta bloqueada por interrupción operativa"
+        if self._subsidized_limit_exceeded(distance, subsidized):
+            projected = self._projected_subsidized_pct(distance, subsidized)
+            return (
+                "Excede el 20% de distancia subsidiada permitido "
+                f"(proyectado: {projected:.1f}%)"
+            )
+        if self.traveler.current_budget < cost:
+            return "Presupuesto insuficiente"
+        return None
+
     def get_options(self) -> Dict[str, Any]:
         """Return available flights, activities and jobs with computed costs/times."""
         if self.transit is not None:
@@ -113,6 +152,10 @@ class PlanningSession:
         airport = self.traveler.current_airport
         if airport is None:
             raise ValueError("Traveler has no current airport")
+
+        lodging_required = self._lodging_required()
+        meal_required = self._meal_required()
+        can_take_flight = (not lodging_required) and self.pending_min_stay_minutes <= 0
 
         flights = []
         for route in getattr(airport, "routes", []) or []:
@@ -133,23 +176,37 @@ class PlanningSession:
                 if aircraft.name not in self.allowed_transports:
                     continue
 
+                distance = float(route.distance_km)
+                cost = round(route.calculate_cost(aircraft), 2)
+                subsidized = bool(route.subsidized)
+                route_blocked = bool(getattr(route, "blocked", False))
+                block_reason = self._flight_block_reason(
+                    distance=distance,
+                    cost=cost,
+                    subsidized=subsidized,
+                    route_blocked=route_blocked,
+                    can_take_flight=can_take_flight,
+                )
                 flights.append(
                     {
                         "origin": airport.id,
                         "destination": route.destination.id,
                         "distance": route.distance_km,
                         "aircraft_type": aircraft.name,
-                        "cost": round(route.calculate_cost(aircraft), 2),
+                        "cost": cost,
                         "time": round(route.calculate_time(aircraft), 2),
-                        "subsidized": bool(route.subsidized),
-                        "blocked": bool(getattr(route, "blocked", False)),
+                        "subsidized": subsidized,
+                        "blocked": route_blocked,
+                        "selectable": block_reason is None,
+                        "block_reason": block_reason,
+                        "projected_subsidized_pct": round(
+                            self._projected_subsidized_pct(distance, subsidized), 2
+                        ),
                     }
                 )
 
         activities = getattr(airport, "actividades", []) or []
         jobs = getattr(airport, "trabajos", []) or []
-        lodging_required = self._lodging_required()
-        meal_required = self._meal_required()
         # Determine job eligibility using network configuration percentage (presupuestoMinimoPorc)
         min_pct = self.net_config.get("presupuestoMinimoPorc", 35)
         try:
@@ -170,7 +227,7 @@ class PlanningSession:
             "lodging_required": lodging_required,
             "meal_required": meal_required,
             "pending_min_stay_minutes": round(self.pending_min_stay_minutes, 2),
-            "can_take_flight": (not lodging_required) and self.pending_min_stay_minutes <= 0,
+            "can_take_flight": can_take_flight,
             "traveler_state": self.get_state(),
         }
 
@@ -343,11 +400,9 @@ class PlanningSession:
         time_min = float(route.calculate_time(aircraft))
         distance = float(route.distance_km)
 
-        subsidized_after = self.subsidized_distance + (distance if route.subsidized else 0.0)
-        total_after = self.total_distance + distance
-        if total_after > 0 and (subsidized_after / total_after) > 0.2:
+        if self._subsidized_limit_exceeded(distance, bool(route.subsidized)):
             current_pct = 0.0 if self.total_distance <= 0 else (self.subsidized_distance / self.total_distance) * 100.0
-            projected_pct = (subsidized_after / total_after) * 100.0
+            projected_pct = self._projected_subsidized_pct(distance, bool(route.subsidized))
             raise ValueError(
                 "Ruta subsidiada no permitida: "
                 f"{airport.id} -> {route.destination.id} ({aircraft.name}) excede el 20% de distancia subsidiada "

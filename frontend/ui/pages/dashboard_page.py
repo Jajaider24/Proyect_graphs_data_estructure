@@ -70,7 +70,7 @@ class DashboardPage:
                                 self._create_status_info()
                             ], spacing=4),
                             ft.Container(expand=True),
-                            ft.ElevatedButton("Cargar Red", icon=ft.Icons.UPLOAD, on_click=self._on_load_network)
+                            ft.Button("Cargar Red", icon=ft.Icons.UPLOAD, on_click=self._on_load_network)
                         ], spacing=16, vertical_alignment=ft.CrossAxisAlignment.CENTER),
                         padding=16
                     )

@@ -59,8 +59,17 @@ class APIClient:
             )
             response.raise_for_status()
             return response.json()
+        except httpx.HTTPStatusError as e:
+            detail = e.response.text
+            try:
+                payload = e.response.json()
+                if isinstance(payload, dict) and payload.get("detail"):
+                    detail = payload["detail"]
+            except Exception:
+                pass
+            raise Exception(f"POST {endpoint} failed: {detail}") from e
         except Exception as e:
-            raise Exception(f"POST {endpoint} failed: {str(e)}")
+            raise Exception(f"POST {endpoint} failed: {str(e)}") from e
     
     # Graph endpoints
     async def load_graph(self, network_file: str = "../data/sample_network.json") -> Dict[str, Any]:

@@ -117,6 +117,7 @@ class SessionStateResponse(BaseModel):
     visited_airports: List[str]
     total_distance: float
     subsidized_distance: float
+    subsidized_distance_pct: float = 0.0
     pending_min_stay_minutes: float = 0
     jobs_done: List[Dict[str, Any]] = Field(default_factory=list)
     activities_done: List[Dict[str, Any]] = Field(default_factory=list)

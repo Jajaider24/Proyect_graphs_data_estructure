@@ -85,12 +85,12 @@ class RoutesPage:
             
             # Action buttons
             ft.Row([
-                ft.ElevatedButton(
+                ft.Button(
                         content=ft.Text("Buscar Ruta"),
                     icon="search",
                     on_click=self._on_search_route
                 ),
-                ft.ElevatedButton(
+                ft.Button(
                         content=ft.Text("Comparar Rutas"),
                     icon="compare_arrows",
                     on_click=self._on_compare_routes
