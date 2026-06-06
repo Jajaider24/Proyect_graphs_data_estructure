@@ -5,12 +5,7 @@ This module contains the structures used to represent:
     - Directed airline routes
     - Aircraft options
     - Dynamic route behavior
-
-The classes extend the academic graph structures
-provided during class lectures.
 """
-
-from src.core.base_graph import Arista
 
 
 class AircraftOption:
@@ -99,12 +94,9 @@ class AircraftOption:
         )
 
 
-class Route(Arista):
+class Route:
     """
     Represents a directed route between two airports.
-
-    This class extends the academic Arista structure
-    while adding domain-specific airline functionality.
 
     The route stores:
         - Distance
@@ -134,18 +126,13 @@ class Route(Arista):
                 Distance between airports in kilometers.
         """
 
-        # Initialize academic edge structure
-        super().__init__(
-            destination,
-            distance_km
-        )
-
         # Airport references
         self.origin = origin
         self.destination = destination
 
         # Distance metric
         self.distance_km = distance_km
+        self.peso = distance_km
 
         # Current optimization criterion
         self.criterion = "distance"
@@ -227,7 +214,7 @@ class Route(Arista):
         """
 
         return aircraft_option.calculate_time(
-        self.distance_km
+            self.distance_km
         )
 
     def update_weight(self, criterion):
@@ -272,6 +259,11 @@ class Route(Arista):
             metric_getter(aircraft)
             for aircraft in self.aircraft_options
         )
+
+    def getDestino(self):
+        """Retrieve destination airport."""
+
+        return self.destination
 
     def getPeso(self):
         """

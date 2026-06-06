@@ -1,10 +1,6 @@
 """
 Graph module - Airline graph implementation.
 
-This module extends the academic graph structure
-provided in class and adapts it for the airline
-simulation project.
-
 The graph uses:
     - Directed edges
     - Weighted routes
@@ -19,18 +15,15 @@ Why adjacency lists?
     and traversal-efficient for sparse graphs.
 """
 
-from src.core.base_graph import Grafo
+import heapq
+import math
 
 
-class Graph(Grafo):
+class Graph:
     """
     Directed weighted airline graph.
 
-    This class extends the academic Grafo structure
-    while adding domain-specific airline behavior.
-
     Airports are stored:
-        - In the academic vertex structure
         - In a fast-access dictionary
     """
 
@@ -39,11 +32,25 @@ class Graph(Grafo):
         Initialize graph.
         """
 
-        # Initialize academic graph structure
-        super().__init__()
-
-        # Fast airport lookup uses the same storage as the academic graph.
+        self.vertices = {}
         self.airports = self.vertices
+
+    def agregar_vertice(self, vertice):
+        """Add vertex to graph."""
+
+        self.vertices[vertice.id] = vertice
+
+    def obtener_vertice(self, identificador):
+        """Retrieve vertex by ID."""
+
+        return self.vertices.get(identificador)
+
+    def reset_visits(self):
+        """Reset traversal state for all vertices."""
+
+        for vertice in self.vertices.values():
+            if hasattr(vertice, "visitado"):
+                vertice.visitado = False
 
     def add_airport(self, airport):
         """
@@ -60,61 +67,39 @@ class Graph(Grafo):
         """
         Add directed route to graph.
 
-        Routes are stored:
-            - In project adjacency lists
-            - In academic adjacency lists
-
         Args:
             route:
                 Route object.
         """
 
-        # Airport.routes is now an alias to the inherited adjacency list.
         route.origin.agregar_adyacencia(route)
 
     def get_airport(self, airport_id):
-        """
-        Retrieve airport by ID.
-
-        Args:
-            airport_id (str):
-                Airport IATA code.
-
-        Returns:
-            Airport:
-                Matching airport object.
-        """
+        """Retrieve airport by ID."""
 
         return self.airports.get(airport_id)
 
     def airport_exists(self, airport_id):
-        """
-        Check whether airport exists.
-
-        Args:
-            airport_id (str):
-                Airport IATA code.
-
-        Returns:
-            bool:
-                True if airport exists.
-        """
+        """Check whether airport exists."""
 
         return airport_id in self.airports
 
     def get_all_airports(self):
-        """
-        Retrieve all airports.
+        """Retrieve all airports."""
 
-        Returns:
-            list:
-                List of Airport objects.
-        """
+        return list(self.airports.values())
 
-        return list(
-            self.airports.values()
-        )
-    
+    def agregar_arista(self, origen_id, destino_id, peso=0):
+        """Compatibility helper to add a weighted connection."""
+
+        origen = self.obtener_vertice(origen_id)
+        destino = self.obtener_vertice(destino_id)
+
+        if origen and destino and hasattr(origen, "agregar_adyacencia"):
+            from src.core.route import Route
+
+            arista = Route(origen, destino, peso)
+            origen.agregar_adyacencia(arista)
 
     def update_all_weights(self, criterion):
         """
@@ -191,6 +176,59 @@ class Graph(Grafo):
             )
 
         return total
+
+    def dijkstra_simple(self, graph, start_id, end_id):
+        """Dijkstra shortest path algorithm."""
+
+        distances = {
+            vertex_id: math.inf
+            for vertex_id in graph.vertices
+        }
+
+        predecessors = {}
+
+        if start_id not in distances or end_id not in distances:
+            return distances, predecessors, []
+
+        distances[start_id] = 0
+        priority_queue = [(0, start_id)]
+
+        while priority_queue:
+            current_distance, current_id = heapq.heappop(priority_queue)
+
+            if current_distance > distances[current_id]:
+                continue
+
+            current_vertex = graph.obtener_vertice(current_id)
+            if current_vertex is None or not hasattr(current_vertex, "obtener_adyacencias"):
+                continue
+
+            for arista in current_vertex.obtener_adyacencias():
+                if hasattr(arista, "is_available") and not arista.is_available:
+                    continue
+
+                neighbor = arista.getDestino()
+                weight = arista.getPeso()
+                new_distance = current_distance + weight
+
+                if new_distance < distances[neighbor.id]:
+                    distances[neighbor.id] = new_distance
+                    predecessors[neighbor.id] = current_id
+                    heapq.heappush(priority_queue, (new_distance, neighbor.id))
+
+        if distances[end_id] == math.inf:
+            return distances, predecessors, []
+
+        path = []
+        current = end_id
+
+        while current != start_id:
+            path.insert(0, current)
+            current = predecessors[current]
+
+        path.insert(0, start_id)
+
+        return distances, predecessors, path
 
     def disable_route(
         self,
