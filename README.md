@@ -54,6 +54,22 @@ proyecto/
 │
 └── requirements.txt        # Dependencias
 ```
+```
+┌─────────────────────────────────────────────────┐
+│          PRESENTATION LAYER (Flet)              │
+│  (Desktop GUI: Pages, Dialogs, Widgets)        │
+└───────────────┬─────────────────────────────────┘
+                │ (HTTP REST)
+┌───────────────▼─────────────────────────────────┐
+│         APPLICATION LAYER (FastAPI)             │
+│  (Routes, Schemas, Middleware, Services)       │
+└───────────────┬─────────────────────────────────┘
+                │ (Service Objects)
+┌───────────────▼─────────────────────────────────┐
+│       DOMAIN & ALGORITHM LAYER (src/)           │
+│  (Graph, Algorithms, Services, Utils)          │
+└─────────────────────────────────────────────────┘
+```
 
 Correr el proyecto 
 
